@@ -1,0 +1,39 @@
+<h4 mat-dialog-title class="text-center">Upload Avatar Image</h4>
+
+<div *ngIf="loading === true">
+  <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+  <h6 class="mt-2 text-center">Loading...</h6>
+</div>
+
+<div *ngIf="!loading">
+    <mat-dialog-content class="p-3">
+      <button mat-button color="primary" class="mx-auto d-block" (click)="fileInput.click()">
+        {{ !imageSource ? 'Select Image' : 'Select Different Image' }}
+      </button>
+      <input (change)="onFileSelected($event)" hidden type="file" accept="image/*" #fileInput>
+
+      <hr *ngIf="imageSource">
+      <div class="row" [hidden]="!imageSource">
+        <div class="col-6">
+          <h6 class="text-center">Select Cropping:</h6>
+          <div class="img-container">
+            <img #image [src]="imageSource" style="max-width:200px;">
+          </div>
+        </div>
+        <div class="col-6">
+          <h6 class="text-center">Finished Result:</h6>
+          <img [src]="imageDestination" class="mx-auto d-block" style="max-width:200px;">
+        </div>
+      </div>
+      <hr *ngIf="imageSource">
+
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <div class="mx-auto d-block">
+      <button (click)="saveImg()" [disabled]="!imageSource" mat-raised-button color="primary">Crop and Save</button>
+      <button mat-raised-button color="primary" (click)="cancel()">Cancel</button>
+      </div>
+    </mat-dialog-actions>
+
+</div>
+

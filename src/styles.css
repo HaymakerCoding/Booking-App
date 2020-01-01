@@ -1,1 +1,68 @@
 /* You can add global styles to this file, and also import other style files */
+@import "~bootstrap/dist/css/bootstrap.css";
+@imort url("https://fonts.googleapis.com/css?family=Iceland|Monoton");
+
+*{
+    font-family: 'Iceland';
+}
+.container{
+    min-height: calc(100vh - 90px)
+}
+.btn-primary{
+    background-color:#4d648d!important;
+    border:1px solid white!important;
+    color:white!important;
+}
+.btn-primary:hover{
+    border:1px solid yellow!important;
+    color:yellow!important;
+}
+
+.star{
+    color:gold!important;
+    cursor: pointer;
+}
+.outline-star{
+    color:lightgray!important;
+    cursor: pointer;
+}
+
+.tableHeaders{
+    background-color:#d0e1f9;
+    border-top:1px solid #283655!important;
+    border-bottom:1px solid #283655;
+}
+.mat-header-row{
+    color:navy!important;
+    border-bottom:2px solid #21a0c4;
+}
+.mat-header-cell{
+    color:#21a0c4!important;
+    font-size:16px!important;
+}
+
+.mat-step-header .mat-step-icon-selected, .mat-step-header .mat-step-icon-state-done, 
+.mat-step-header .mat-step-icon-state-edit {
+    color: white!important;
+}
+
+.cursor{
+    cursor: pointer;
+}
+
+
+@media only screen and (min-width:900px){
+/* blue box border */
+    body{
+        margin-top:10px!important;
+        margin-left:60px!important;
+        margin-right:60px!important;
+        margin-bottom:10px!important;
+        background-color:white!important;
+    }  
+    html{
+        background-color:black!important;
+    }
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

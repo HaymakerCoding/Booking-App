@@ -1,0 +1,36 @@
+<h1 mat-dialog-title class="text-center">Tee Times for {{ courseName }}</h1>
+<mat-dialog-content>
+  <div *ngIf="loading" style="width:100%; min-height:75vh; background-color:rgb(245, 242, 242);" class="text-center">
+    <div class="spinner-border text-info mt-5" style="width:8rem; height:8rem;" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading">
+    <h4 class="text-center">{{ displayDate }}</h4>
+    <h5 class="text-center">Spots: {{ spotsSelected+'/'+ spotsNeeded }} </h5>
+    <button (click)="save()" mat-raised-button color="primary" class="mx-auto d-block">Save</button>
+    <br>
+
+    <table class="table table-sm">
+      <tr class="text-center">
+        <th class="text-left">Start</th>
+        <th>Hole</th>
+        <th>Round</th>
+        <th>Slots</th>
+        <th>Book</th>
+      </tr>
+      <tr *ngFor="let teeTime of teeTimes" class="text-center">
+        <td class="text-left">{{ teeTime.startTime }}</td>
+        <td>{{ teeTime.hole }}</td>
+        <td>{{ teeTime.round }}</td>
+        <td>{{ teeTime.freeSlots }}</td>
+        <td><input type="checkbox" (click)="addTeeTime(teeTime)"></td>
+      </tr>
+    </table>
+    <hr>
+    <button (click)="save()" mat-raised-button color="primary" class="mx-auto d-block">Save</button>
+  </div>
+</mat-dialog-content>
+
+

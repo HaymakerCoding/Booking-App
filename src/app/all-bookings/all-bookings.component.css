@@ -1,0 +1,13 @@
+table{
+    width:100%;
+}
+.mat-row:nth-child(even){
+    background-color:lightgray;
+}
+.red{
+    color:red;
+}
+.teeTimeInfo{
+    color:#21a0c4;
+    font-weight: bold;
+}

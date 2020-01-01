@@ -1,0 +1,227 @@
+<div class="container content pt-5 pb-5">
+
+  <div *ngIf="loading === true">
+    <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+    <h6 class="mt-2 text-center">Loading...</h6>
+  </div>
+
+  <div *ngIf="loading === false">
+
+    <!--In order to have 2 different steppers (horizontal and vertical) depending on screen size we place the
+      logic for each step here as templates then we include them in each stepper. The nav buttons and step labels must be
+      duplicated in each though.-->
+
+    <!--STEP 1 SELECT DATE-->
+    <ng-template #stepOne>
+        <div class="text-center mb-3" style="width:100%;">
+          <h4 class="text-center">Select the date you would like to book</h4>
+        </div>
+        <div class="row">
+          <div *ngFor="let date of dates" class="col-12 col-md-4 offset-md-4">
+            <button [ngClass]="{active: date[0] === dateSelected }" (click)="selectDate(date)" class="btn btn-outline-secondary mx-auto d-block mt-1 dateBtns">{{ date[1] }}</button>
+          </div>
+        </div>
+        <hr>
+        <div [innerHTML]="announcementHTML"></div>
+    </ng-template>
+
+    <!--STEP 2 SELECT COURSE-->
+    <ng-template #stepTwo>
+      <h5 class="text-center" *ngIf="dateSelected && lmc === false">Select course and number of spots for {{ dateSelected[1] }}</h5>
+      <h5 class="text-center" *ngIf="dateSelected && lmc === true">Last Minute Club spots for today, {{ dateSelected [1] }}</h5>
+
+      <table mat-table [dataSource]="courses">
+        <ng-container matColumnDef="course">
+          <th mat-header-cell *matHeaderCellDef>Course</th>
+          <td mat-cell *matCellDef="let course">{{ course.courseName }}</td>
+        </ng-container>
+        <ng-container *ngIf="lmc === true" matColumnDef="fee">
+          <th mat-header-cell *matHeaderCellDef>Fee</th>
+          <td mat-cell *matCellDef="let course">{{ course.lmcFee | currency }}</td>
+        </ng-container>
+        <ng-container matColumnDef="spots">
+          <th class="text-center" mat-header-cell *matHeaderCellDef>Spots Available</th>
+          <td class="text-center" mat-cell *matCellDef="let course">{{ course.spotsLeft + '/' + course.totalSpots }}</td>
+        </ng-container>
+        <ng-container matColumnDef="players">
+          <th mat-header-cell *matHeaderCellDef>Number of Players</th>
+          <td mat-cell *matCellDef="let course" class="align-center pt-2">
+            <mat-checkbox class="ml-1" *ngFor="let spot of course.spots; let i = index" (change)="selectCourse(course, i+1, $event)" [checked]="course === courseSelected && spotsSelected > i">
+
+            </mat-checkbox>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="getColumns()"></tr>
+        <tr mat-row *matRowDef="let row; columns: getColumns()"></tr>
+      </table>
+    </ng-template>
+
+    <!--STEP 3 SELECT MEMBERS-->
+    <ng-template #stepThree>
+      <div *ngIf="courseSelected && membersSelected.length === spotsSelected">
+        <h4 class="text-center mb-1">Enter the member number(s) for each player</h4>
+        <h5 class="text-center mb-3">{{ courseSelected.courseName + ", " + dateSelected[1] + ', for ' + spotsSelected }}</h5>
+        <div class="row">
+          <div class="col-12 col-md-6 offset-md-3">
+            <mat-form-field *ngFor="let spot of spotsSelectedArray; let i = index;">
+
+              <mat-label>
+                {{ !membersSelected[i].fullName ? 'Enter Player ' + (i+1) + ' Member #' : membersSelected[i].fullName }}
+              </mat-label>
+              <input (input)="findMember($event.target, i)" #numInput matInput type="number">
+              <mat-icon matSuffix class="cursor" (click)="showMemberSearch(numInput, i)">search</mat-icon>
+              <mat-icon *ngIf="membersSelected[i].fullName" style="color:green;" matSuffix>check</mat-icon>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <!--STEP 4 select tee time and Finish-->
+    <ng-template #stepFour>
+      <h4 class="text-center mb-1">Choose tee time(s) and select finish to complete your booking</h4>
+      <h5 *ngIf="courseSelected" class="text-center mb-4">{{ courseSelected.courseName + ", " + dateSelected[1] + ', for ' + spotsSelected }}</h5>
+      <button mat-raised-button color="primary" class="mx-auto d-block mb-2" (click)="showTeeTimeModal()">Get Tee Times</button>
+      <div cdkDropListGroup>
+        <!--list of tee times available, corresponding drop boxes are the tee time columns in table-->
+        <div *ngIf="selectedTeeTimes"
+          cdkDropList
+          [cdkDropListData]="allTeeTimes"
+          (cdkDropListDropped)="dropBack($event)"
+          cdkDropListOrientation="horizontal"
+          class="timeBox">
+          <div *ngFor="let teeTime of allTeeTimes" cdkDrag [attr.teeTimeId]="teeTime.id"
+            [cdkDragData]="teeTime.startTime" class="dragableTimes"> {{ teeTime.startTime }}
+          </div>
+        </div>
+
+        <table mat-table [dataSource]="dataSource" class="mt-4">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let member">{{ member.fullName }}</td>
+            <td mat-footer-cell *matFooterCellDef>Total</td>
+          </ng-container>
+          <ng-container matColumnDef="memberNumber">
+            <th class="text-center" mat-header-cell *matHeaderCellDef>Member #</th>
+            <td class="text-center" mat-cell *matCellDef="let member">{{ member.memberNumber }}</td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+          <ng-container matColumnDef="teeTime">
+            <th class="text-center" mat-header-cell *matHeaderCellDef>Tee Time(s)</th>
+            <td class="text-center" mat-cell *matCellDef="let member">
+              <div cdkDropList #dropList="cdkDropList" [cdkDropListData]="member" style="height:50px; width:100%; position:relative;" (cdkDropListDropped)="drop($event, member.memberId)">
+                <div *ngIf="member.teeTime" class="dragableTimes" style="height:100%;" cdkDrag>
+                  {{ member.teeTime.startTime }}
+                </div>
+                <div *ngIf="!member.teeTime" style="height:50px; position:absolute; left:0; right:0; margin:auto;" class="dragableTimes">
+                  <i>None selected</i>
+                </div>
+              </div>
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
+          <ng-container matColumnDef="fee">
+            <th class="text-center" mat-header-cell *matHeaderCellDef>Play Fee</th>
+            <td class="text-center" mat-cell *matCellDef="let member">{{ getPlayFee(member.id) | currency }}</td>
+            <td class="text-center" mat-footer-cell *matFooterCellDef>{{ getTotalFee() | currency }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="finishTableColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: finishTableColumns"></tr>
+          <tr mat-footer-row *matFooterRowDef="finishTableColumns"></tr>
+        </table>
+      </div>
+      <h6 class="text-center mt-3 mb-3">Please Note: Play fees will be charged to member account(s) indicated. Enjoy your round!</h6>
+      <button *ngIf="!processing" (click)="finish()" class="mx-auto d-block mt-3 mb-3" mat-raised-button color="primary" >Finish</button>
+      <div *ngIf="processing">
+        <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+        <h6 class="mt-2 text-center">Processing...</h6>
+      </div>
+    </ng-template>
+
+    <!--Horizontal Stepper for large screen devices-->
+    <ng-template [ngIf]="smallScreen === false" [ngIfElse]="bigScreen">
+      <mat-horizontal-stepper #steppers linear (selectionChange)="selectionChange($event)">
+        <!--change default icon-->
+        <ng-template matStepperIcon="edit">
+          <mat-icon>check</mat-icon>
+        </ng-template>
+        <!--STEP 1-->
+        <mat-step [editable]="!lmc" [completed]="dateSelected">
+          <ng-template matStepLabel>Select Date</ng-template>
+          <ng-container *ngTemplateOutlet="stepOne"></ng-container>
+        </mat-step>
+        <!--STEP 2-->
+        <mat-step [completed]="courseSelected">
+          <ng-template matStepLabel>Select Course</ng-template>
+          <ng-container *ngTemplateOutlet="stepTwo"></ng-container>
+          <div class="centeredContainers">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </mat-step>
+        <!--STEP 3-->
+        <mat-step [completed]="checkMembers() && courseSelected">
+          <ng-template matStepLabel>Members Numbers</ng-template>
+          <ng-container *ngTemplateOutlet="stepThree"></ng-container>
+          <div class="centeredContainers">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </mat-step>
+        <!--STEP 4-->
+        <mat-step>
+          <ng-template matStepLabel>Tee Times / Finish</ng-template>
+          <ng-container *ngTemplateOutlet="stepFour"></ng-container>
+          <div class="centeredContainers">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="reset()">Reset</button>
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
+    </ng-template>
+
+    <!--Vertical Stepper for phone-->
+    <ng-template #bigScreen>
+      <mat-vertical-stepper #steppers linear (selectionChange)="selectionChange($event)">
+        <!--change default icon-->
+        <ng-template matStepperIcon="edit">
+          <mat-icon>check</mat-icon>
+        </ng-template>
+        <!--STEP 1-->
+        <mat-step [completed]="dateSelected">
+          <ng-template matStepLabel>Select Date</ng-template>
+          <ng-container *ngTemplateOutlet="stepOne"></ng-container>
+        </mat-step>
+        <!--STEP 2-->
+        <mat-step [completed]="courseSelected">
+          <ng-template matStepLabel>Select Course</ng-template>
+          <ng-container *ngTemplateOutlet="stepTwo"></ng-container>
+          <div class="centeredContainers">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </mat-step>
+        <!--STEP 3-->
+        <mat-step [completed]="checkMembers() === true && courseSelected">
+          <ng-template matStepLabel>Members Numbers</ng-template>
+          <ng-container *ngTemplateOutlet="stepThree"></ng-container>
+          <div class="centeredContainers">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </mat-step>
+        <!--STEP 4-->
+        <mat-step>
+          <ng-template matStepLabel>Tee Times / Finish</ng-template>
+          <ng-container *ngTemplateOutlet="stepFour"></ng-container>
+          <div class="centeredContainers">
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="reset()">Reset</button>
+          </div>
+        </mat-step>
+      </mat-vertical-stepper>
+    </ng-template>
+
+  </div>
+
+</div>

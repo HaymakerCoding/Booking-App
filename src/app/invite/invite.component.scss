@@ -1,0 +1,13 @@
+.mat-badge-content {
+    z-index: 1;
+    font-size:7px;
+    background-color:maroon;
+}
+.userAvatar {
+    height:60px;
+    width:60px;
+    border-radius:50%;
+    object-fit: cover;
+    cursor: pointer;
+    margin: auto;
+}

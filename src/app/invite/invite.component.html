@@ -1,0 +1,20 @@
+<h3 class="text-center mt-3 mb-3">Invite some buddies to play golf</h3>
+
+<h4>Step 1 - Get Tee Times</h4>
+<mat-form-field>
+  <mat-label>Number of Players</mat-label>
+  <input matInput>
+</mat-form-field>
+<mat-form-field>
+  <input matInput [matDatepicker]="picker" placeholder="Choose a date">
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+</mat-form-field>
+<mat-form-field>
+  <mat-label>Course</mat-label>
+  <mat-select>
+    <mat-option>Test</mat-option>
+  </mat-select>
+</mat-form-field>
+
+

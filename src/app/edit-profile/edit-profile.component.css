@@ -1,0 +1,17 @@
+label{
+    font-weight:bold;
+    color:navy;
+}
+#photoHolder {
+    width:100%;
+    text-align: center;
+}
+.userAvatar {
+    height:100px;
+    width:80px;
+    border-radius:50%;
+    object-fit: cover;
+    cursor: pointer;
+    margin-bottom:15px;
+    margin: auto;
+}

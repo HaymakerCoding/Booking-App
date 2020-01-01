@@ -1,0 +1,18 @@
+<div id="navContainer" class="text-center p-4">
+  <h2>Admin Tools</h2>
+  <hr>
+
+  <a class="btn btn-outline-secondary navBtns" [ngClass]="{'active': currentUrl === '/Admin'}" routerLink="/Admin">Admin Home</a>
+  <br>
+  <a class="btn btn-outline-secondary navBtns mt-2" [ngClass]="{'active': currentUrl === '/Admin/Book/Group'}" routerLink="/Admin/Book/Group">Book Group</a>
+  <br>
+  <a class="btn btn-outline-secondary navBtns mt-2" [ngClass]="{'active': currentUrl === '/Admin/Book/Indiv'}" routerLink="/Admin/Book/Indiv">Book Indiv/Small Group</a>
+  <br>
+  <a class="btn btn-outline-secondary navBtns mt-2" [ngClass]="{'active': currentUrl === '/Admin/Book/All'}" routerLink="/Admin/Book/All">View/Edit Bookings</a>
+  <br>
+  <a class="btn btn-outline-secondary navBtns mt-2" [ngClass]="{'active': currentUrl === '/Admin/Messages/Send'}" routerLink="/Admin/Messages/Send">Send Message to User(s)</a>
+  <br>
+  <a class="btn btn-outline-secondary navBtns mt-2" [ngClass]="{'active': currentUrl === '/Admin/Pics/Approve'}" routerLink="/Admin/Pics/Approve">Approve User Pics</a>
+
+</div>
+

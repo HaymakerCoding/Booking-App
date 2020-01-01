@@ -1,0 +1,150 @@
+<div class="container content pt-5 pb-5">
+
+  <h1 class="text-center">My Profile</h1>
+  <hr>
+
+  <form *ngIf="form" [formGroup]="form"
+  (ngSubmit)="save(form.value)">
+
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <div class="mb-3" style="background-color:rgba(78, 85, 97, 0.9); padding-top:8px; padding-bottom:4px; border-radius:6px;">
+        <h2 class="text-center" style="color:white!important;">Contact Info</h2>
+        </div>
+          <div class="form-group row">
+            <label for="firstNameInput" class="col-sm-4 col-form-label">First Name *:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" maxlength="50" id="firstNameInput" formControlName="firstName">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="lastNameInput">Last Name *:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" maxlength="50" id="lastNameInput" formControlName="lastName">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="genderSelect">Gender:</label>
+            <div class="col-sm-8">
+              <select class="form-control"  id="genderSelect" formControlName="gender">
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="birthInput">Birth Year:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" placeholder="YYYY" maxlength="4" id="birthInput" formControlName="birth">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="emailInput">Email:</label>
+            <div class="col-sm-8">
+              <input type="email" class="form-control" id="emailInput" formControlName="email" readonly>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="altEmailInput">Alternate Email:</label>
+            <div class="col-sm-8">
+              <input type="email" class="form-control" id="altEmailInput" formControlName="altEmail">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="homePhoneInput">Home Phone:</label>
+            <div class="col-sm-8">
+              <input type="phone" class="form-control" id="homePhoneInput" formControlName="homePhone">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="cellPhoneInput">Cell Phone:</label>
+            <div class="col-sm-8">
+              <input type="phone" class="form-control" id="cellPhoneInput" formControlName="cellPhone">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="addressInput">Address:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="addressInput" formControlName="address">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="cityInput">City:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="cityInput" formControlName="city">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="provInput">Province:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="provInput" formControlName="province">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-4 col-form-label" for="postalInput">Postal Code:</label>
+            <div class="col-sm-8">
+              <input type="text" class="form-control" id="postalInput" formControlName="postal">
+            </div>
+          </div>
+
+      </div>
+
+      <div class="col-12 col-md-6">
+          <div class="mb-3" style="background-color:rgba(78, 85, 97, 0.9); padding-top:8px; padding-bottom:4px; border-radius:6px;">
+          <h2 class="text-center" style="color:white!important;">Preferences</h2>
+          </div>
+          <div class="form-group row">
+              <label class="col-sm-4 col-form-label" for="roundInput">Rounds Per Year:</label>
+              <div class="col-sm-8">
+                <input type="number" class="form-control" maxlength="5" id="roundInput" formControlName="rounds">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="avgInput" class="col-sm-4 col-form-label">Average Score</label>
+              <div class="col-sm-8">
+                <input type="number" class="form-control" maxlength="5" id="avgInput" formControlName="avgScore">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="competitiveSelect" class="col-sm-12 col-form-label">Competition Preference</label>
+              <div class="col-sm-12">
+                <select class="form-control" id="competitiveSelect" formControlName="competitionPref">
+                  <option>More intense the better</option>
+                  <option>Friendly yet competitive</option>
+                  <option>A small amount</option>
+                  <option>Purely social</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="daysSelect" class="col-sm-12 col-form-label">Days Able to Play</label>
+              <div class="col-sm-12">
+                <select class="form-control" id="daysSelect" formControlName="daysAbleToPlay">
+                  <option>Any day if I am free</option>
+                  <option>Mostly weekends but the odd weekday</option>
+                  <option>Mostly weekdays but the odd weekend</option>
+                  <option>Weekends</option>
+                  <option>Weekdays</option>
+                </select>
+              </div>
+            </div>
+            <div id="photoHolder">
+              <img *ngIf="user.pic" class="mx-auto img-thumbnail d-block userAvatar" [src]="'data:image/jpeg;base64,' + user.pic">
+              <mat-icon style="transform:scale(3); height:40px;" class="mx-auto d-block mt-5" *ngIf="!user.pic">account_circle</mat-icon>
+              <button mat-raised-button type="button" class="mt-1" (click)="showImgUpload()" color="primary">
+                {{ !user.pic ? 'Upload Picture' : 'Change Picture' }}
+              </button>
+              <br>
+              * Note: you may need to refresh your browser to see new avatar image in top nav.
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    <button class="d-block mx-auto" mat-raised-button type="submit" color="primary" style="width:200px;" [disabled]="!form.valid" name='btnSubmit'>Save</button>
+
+  </form>
+
+
+
+</div>

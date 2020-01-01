@@ -1,0 +1,35 @@
+.navBtns{
+    min-width:200px;
+    color:white!important;
+    border:1px solid white;
+}
+.navBtns.active{
+    border:1px solid white!important;
+}
+
+#navContainer{
+    min-height:100%;
+    width:100%;
+    background-color:rgba(78, 85, 97, 0.9);/*#807d7d;*/
+    color:white!important;
+    border:1px solid black;
+}
+#navContainer h2{
+    color:white!important;
+}
+
+a:link {
+  color:white!important;
+}
+
+.navBtns:visited {
+  color:white!important;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:active {
+  text-decoration: underline;
+}

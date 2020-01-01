@@ -1,0 +1,30 @@
+.selectableMembers{
+    background-color:white;
+    margin-top: 1px;
+    width:90%;
+}
+
+.selectableMembers:hover{
+    border-radius: 6px;
+    outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+}
+
+.userAvatar {
+    height:40px;
+    width:32px;
+    border-radius:50%;
+    object-fit: cover;
+    cursor: pointer;
+    margin: auto;
+}
+
+/* For giving the material tabs a blueish color for active tab */
+::ng-deep .mat-ink-bar{
+    background-color: var(--primary-color,#21a0c4) !important;
+}
+::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+    color:#21a0c4;
+    font-weight:bold;
+}

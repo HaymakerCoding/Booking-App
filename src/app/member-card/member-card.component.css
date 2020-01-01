@@ -1,0 +1,8 @@
+.userAvatar {
+    height:60px;
+    width:48px;
+    border-radius:50%;
+    object-fit: cover;
+    cursor: pointer;
+    margin: auto;
+}

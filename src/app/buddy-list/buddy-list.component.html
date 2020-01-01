@@ -1,0 +1,136 @@
+<div class="container content pt-5 pb-5">
+  <h1 class="mb-4 text-center">My Buddies</h1>
+  <div *ngIf="loading === true">
+    <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+    <h6 class="mt-2 text-center">Loading...</h6>
+  </div>
+
+  <div *ngIf="loading === false">
+
+    <mat-tab-group>
+      <!--Buddy List Section-->
+      <mat-tab label="{{ 'Buddies (' + getNumBuddies() + ')' }}">
+        <h6 class="mt-2 mb-2" *ngIf="getNumBuddies() <= 0">No buddies or lists added yet. Go to 'Search Members' to find buddies.</h6>
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="bottom-gray">
+          <mat-tree-node *matTreeNodeDef="let node;" >
+            <!-- use a disabled button to provide padding for tree leaf -->
+            <button mat-icon-button disabled></button>
+            <!--this is the actual member data-->
+            <div class="row" style="background-color:white; width:100%;">
+                <div class="col-3 text-center" style="display: flex; align-items: center;">
+                  <img *ngIf="node.pic != null" class="userAvatar" [src]="'data:image/jpeg;base64,' + node.pic">
+                  <mat-icon *ngIf="node.pic === null" style="font-size:40px; height:40px; width:40px; margin:auto;">account_circle</mat-icon>
+                </div>
+                <div class="col-5 text-center" style="display: flex; align-items: center;">
+                    {{ node.name }}
+                </div>
+                <div class="col-4 text-center" style="display: flex; align-items: center;">
+                  <button (click)="removeBuddy(node.id, node.listName)" mat-button>Remove</button>
+                </div>
+              </div>
+          </mat-tree-node>
+          <!-- This is the tree node template for expandable nodes -->
+          <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding class="bottom-gray1">
+            <button mat-icon-button matTreeNodeToggle
+                    [attr.aria-label]="'toggle ' + node.name">
+              <mat-icon class="mat-icon-rtl-mirror mb-1">
+                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+              </mat-icon>
+            </button>
+            <div style="display:flex; width:100%; margin-top:4px;">
+              <div *ngIf="!node.editMode" style="font-weight:bold;">
+                {{ node.name }}
+                &nbsp; {{ '(' + node.length + '/' + MAX_BUDDIES_PER_LIST + ')' }}
+              </div>
+              <div *ngIf="node.editMode">
+                <mat-form-field>
+                  <mat-label>New list name</mat-label>
+                  <input matInput [value]="node.name" #listNameInput>
+                </mat-form-field>
+                <button mat-button (click)="editName(node.name, listNameInput.value)">Save</button>
+                <button mat-button (click)="node.editMode = null">Cancel</button>
+              </div>
+              <div style="flex: 1"></div>
+              <mat-icon *ngIf="!node.editMode" class="mr-2 cursor" (click)="node.editMode = true" matTooltip="Edit list name">edit</mat-icon>
+            </div>
+          </mat-tree-node>
+        </mat-tree>
+      </mat-tab>
+
+      <!--Search Members Section-->
+      <mat-tab label="{{ 'Search Members (' + numMembers + ')' }}">
+        <br>
+          <form>
+            <mat-form-field>
+              <mat-label>
+                Enter name
+              </mat-label>
+              <input matInput type="text" #nameInput>
+            </mat-form-field>
+            <button mat-button type="submit" (click)="searchMembers(nameInput.value)">Search</button>
+            <button mat-button type="submit" (click)="clearSearch(nameInput)">Clear</button>
+          </form>
+          <hr>
+          <b><i><span class="mb-3">{{ memberResults.length + ' results' }}</span></i></b>
+
+          <div class="row mt-2 mb-2 cursor selectableMembers" *ngFor="let member of memberResults" (click)="showChooseList(member, selectListDialog)">
+            <div class="col-3 text-center" style="display: flex; align-items: center;">
+              <img *ngIf="member.pic != null" class="userAvatar" [src]="'data:image/jpeg;base64,' + member.pic">
+              <mat-icon *ngIf="member.pic == null" style="font-size:40px; height:40px; width:40px; margin:auto;">account_circle</mat-icon>
+            </div>
+            <div class="col-7 text-center" style="display: flex; align-items: center;">
+                {{ member.fullName }}
+            </div>
+            <div class="col-2 text-center" style="display: flex; align-items: center;">
+              <mat-icon *ngIf="isBuddy(member) === false">add</mat-icon>
+              <span *ngIf="isBuddy(member) === true">Already Buddies</span>
+            </div>
+          </div>
+      </mat-tab>
+
+
+      <!--Invite Section-->
+      <mat-tab label="Invite">
+        <app-invite></app-invite>
+
+      </mat-tab>
+
+      <!--MessageSection-->
+      <mat-tab label="Message">
+
+      </mat-tab>
+
+    </mat-tab-group>
+
+  </div>
+
+  <!--Dialog for selecting the list to add a new buddy to-->
+  <ng-template #selectListDialog let-data>
+      <h4 mat-dialog-title>Select a list for {{ data.fullName }}</h4>
+      <mat-dialog-content>
+        <mat-tab-group>
+            <mat-tab label="Existing List">
+              <mat-form-field class="mt-3" style="width:100%;">
+                <mat-label>
+                  Buddy List
+                </mat-label>
+                <mat-select #buddySelect>
+                  <mat-option *ngFor="let name of buddyListNames" [value]="name">{{ name }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <button (click)="addBuddy(data, buddySelect.value)" [disabled]="!buddySelect.value" class="mt-3 mb-3" mat-raised-button color="primary">Add</button>
+            </mat-tab>
+            <mat-tab label="New List">
+              <mat-form-field class="mt-3" style="width:100%;">
+                <mat-label>
+                  List Name
+                </mat-label>
+                <input matInput #buddyInput>
+              </mat-form-field>
+              <button (click)="addBuddy(data, buddyInput.value)" [disabled]="!buddyInput.value" class="mt-3 mb-3" mat-raised-button color="primary">Add</button>
+            </mat-tab>
+          </mat-tab-group>
+      </mat-dialog-content>
+    </ng-template>
+
+</div>

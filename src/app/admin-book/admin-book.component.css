@@ -1,0 +1,11 @@
+label{
+    color:navy;
+    font-weight:bold;
+}
+
+.table th{
+    background-color:maroon;
+    color:white;
+    border-top:2px solid black;
+    border-bottom:2px solid black;
+}

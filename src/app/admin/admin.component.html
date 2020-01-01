@@ -1,0 +1,33 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-12 col-md-3 pl-0">
+      <app-admin-nav></app-admin-nav>
+    </div>
+    <div class="content container pt-4 col-12 col-md-9">
+
+      <h2 class="text-center mb-4">Admin Home</h2>
+      <div *ngIf="loading === true">
+        <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+        <h6 class="mt-2 text-center">Loading...</h6>
+      </div>
+
+      <div *ngIf="loading === false">
+        <hr>
+        <br>
+        <h3>Announcements:</h3>
+        <textarea #text class="form-control" rows="10">
+          {{ announcement.text }}
+        </textarea>
+
+        <button style="width:100%;" (click)="saveAnnoucement(text.value)" class="btn btn-primary">Save</button>
+        <hr>
+        <h5><b>Last Updated by:</b> {{ announcement.updatedByName }}</h5>
+        <h5><b>Last Updated at:</b> {{ announcement.updatedAt }}</h5>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

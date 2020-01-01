@@ -1,0 +1,119 @@
+.nav-item{
+    min-width:100px;
+}
+#navBar{
+    background-color:maroon!important;
+    margin-top:-100px;
+}
+
+#logoText{   
+    font-size:3.5em!important;
+    color:black!important;
+}
+.menuItems{
+    font-size:18px;
+}
+
+.mat-drawer{
+    min-width:250px;
+    padding:20px;
+    
+}
+.mat-drawer .mat-button {
+    display:block;
+    width:100%;
+    text-align: left;
+}
+.menuItems:after {
+    border-bottom: 2px solid maroon;
+    transform: scaleX(0);
+    transition: transform 350ms ease-in-out;
+    display: block;
+    content: '';
+}
+.filler{
+    flex: 1 1 auto;
+}
+mat-icon{
+    font-size:40px;
+    width:100%;
+}
+#bookBtn{
+    background-color: transparent;
+    border:1px solid maroon;
+    font-size: 20px;
+}
+mat-toolbar{
+    background-image: url('../../assets/background.jpg');
+    padding:10px;
+    background-size: cover;
+    min-height:90px;
+    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.35);
+}
+mat-toolbar-row{
+    height:80px;
+    display:flex;
+    align-content: center;
+}
+
+.menuItems:hover:after {
+    transform: scaleX(1);
+}
+
+.small-icon{
+    font-size:22px;
+    width:25%;
+    color:cadetblue;
+}
+
+.menuItems.active-link:after {
+    display: block;
+    content: '';
+    border-bottom: 2px solid maroon;
+    transform: scaleX(1);
+}
+.icons{
+    width:40px;
+    cursor:pointer;
+}
+.userAvatar {
+    height:60px;
+    width:48px;
+    border-radius:50%;
+    object-fit: cover;
+    cursor: pointer;
+    margin: auto;
+}
+
+.iconBoxes{
+    display: flex; align-items: center; justify-content: center; padding:0!important; min-width:60px;
+}
+
+@media only screen and (max-width:1000px){
+    #logoContainer{
+        top:13%!important;
+    }
+    #headerImg{
+        height:55%!important;
+    }
+    #pcHeader, #logo{
+        max-height:110px!important;
+    }
+    #navBar{
+        margin-top:-5px;
+    }
+    #logoContainer{
+        font-size:0.7em;
+    }
+    #mobileOnlyLinks{
+        display:inline-block!important;
+    }
+    .menuItems.active-link{
+        background-color:white!important;
+        color:#4e5561!important;
+    }
+    #bookBtn{
+        display:none!important;
+    }
+
+}

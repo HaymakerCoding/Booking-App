@@ -1,0 +1,76 @@
+<!--Search all ClubEG Members OR a list of user's buddies. Member/Buddy Data is passed in to the dialog from parent component-->
+  <mat-tab-group>
+      <!--Buddy List Section-->
+      <mat-tab mat-dialog-title label="{{ 'Buddies (' + numBuddies + ')' }}">
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="bottom-gray">
+          <mat-tree-node *matTreeNodeDef="let node;" >
+            <!-- use a disabled button to provide padding for tree leaf -->
+            <button mat-icon-button disabled></button>
+            <!--this is the actual member data-->
+            <div class="row selectableMembers" (click)="chooseMember(node.memberId)">
+                <div class="col-3 text-center" style="display: flex; align-items: center;">
+                  <img *ngIf="node.pic != null" class="userAvatar" [src]="'data:image/jpeg;base64,' + node.pic">
+                  <mat-icon *ngIf="node.pic === null" style="font-size:40px; height:40px; width:40px; margin:auto;">account_circle</mat-icon>
+                </div>
+                <div class="col-5 text-center" style="display: flex; align-items: center;">
+                    {{ node.name }}
+                </div>
+                <div class="col-4 text-center" style="display: flex; align-items: center;">
+
+                </div>
+              </div>
+          </mat-tree-node>
+          <!-- This is the tree node template for expandable nodes -->
+          <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding class="bottom-gray1">
+            <button mat-icon-button matTreeNodeToggle
+                    [attr.aria-label]="'toggle ' + node.name">
+              <mat-icon class="mat-icon-rtl-mirror mb-1">
+                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+              </mat-icon>
+            </button>
+            <div style="display:flex; width:100%; margin-top:4px;">
+              <div style="font-weight:bold;">
+                {{ node.name }}
+                &nbsp; {{ '(' + node.length + '/' + MAX_BUDDIES_PER_LIST + ')' }}
+              </div>
+              <div style="flex: 1"></div>
+            </div>
+          </mat-tree-node>
+        </mat-tree>
+      </mat-tab>
+
+      <!--Search Members Section-->
+      <mat-tab mat-dialog-title label="{{ 'Search Members (' + members.length + ')' }}">
+          <mat-dialog-content style="width:100%;" class="mx-auto pb-2">
+            <div>
+                <br>
+                <form>
+                  <mat-form-field>
+                    <mat-label>
+                      Enter name
+                    </mat-label>
+                    <input matInput type="text" #nameInput>
+                  </mat-form-field>
+                  <button mat-button type="submit" (keydown.enter)="searchMembers(nameInput.value)" (click)="searchMembers(nameInput.value)">Search</button>
+                </form>
+                <hr>
+                <b><i><span class="mb-3">{{ memberResults.length + ' results' }}</span></i></b>
+
+                <div class="row mt-2 cursor selectableMembers" *ngFor="let member of memberResults" (click)="chooseMember(member.memberId)">
+                  <div class="col-4 text-center" style="display: flex; align-items: center;">
+                    <img *ngIf="member.pic != null" class="userAvatar" [src]="'data:image/jpeg;base64,' + member.pic">
+                    <mat-icon *ngIf="member.pic == null" style="font-size:40px; height:40px; width:40px; margin:auto;">account_circle</mat-icon>
+                  </div>
+                  <div class="col-8 text-center" style="display: flex; align-items: center;">
+                      {{ member.fullName }}
+                  </div>
+                </div>
+            </div>
+        </mat-dialog-content>
+      </mat-tab>
+
+  </mat-tab-group>
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="cancel()" class="mx-auto d-block">Cancel</button>
+  </mat-dialog-actions>
+

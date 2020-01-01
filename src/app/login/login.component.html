@@ -1,0 +1,30 @@
+<div class="container-fluid pt-0">
+  <img src="/assets/clubegheader.png">
+  <h1>Booking App</h1>
+
+  <form [formGroup]="form" (ngSubmit)="login(form.value)">
+    <h3 class="text-center">Login</h3>
+
+    <mat-form-field>
+        <mat-label class="form-control-label" for="emailInput"><b>Email or Username:</b></mat-label>
+        <input matInput id="emailInput" type="text" name="email" formControlName="email" placeholder="Enter Email or Nickname" required>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label class="form-control-label" for="passwordInput"><b>Password:</b></mat-label>
+        <input matInput id="passwordInput" type="password" name="password" formControlName="password" placeholder="Password" required>
+    </mat-form-field>
+
+    <div class="form-group text-center" *ngIf="loading === false">
+      <button mat-raised-button color="primary" [disabled]="!form.valid" name='btnSubmit' id='btnSubmit'>Login</button>
+    </div>
+
+    <div *ngIf="loading === true">
+      <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+      <h6 class="mt-2 text-center">Loading...</h6>
+    </div>
+    <h4 name="errors" class="text-center" style="color:red;" id="loginErrors"></h4>
+
+  </form>
+
+</div>

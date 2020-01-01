@@ -1,0 +1,100 @@
+<div class="container content pt-5 pb-5">
+
+  <h1 class="text-center mb-4">My Bookings</h1>
+
+  <div *ngIf="loading === true">
+    <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+    <h6 class="mt-2 text-center">Loading...</h6>
+  </div>
+
+  <div *ngIf="loading === false">
+    <div style="width:100%; position:relative;">
+      <mat-form-field>
+        <mat-label>Year</mat-label>
+        <mat-select [(value)]="yearSelected" (selectionChange)="getBookings($event.value)">
+          <mat-option *ngFor="let year of yearOptions" [value]="year">{{ year }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button (click)="filterBookings()" mat-button style="position:absolute; bottom:0; right:0;">
+        {{ viewBookedBy === 'all' ? 'View Just Me' : 'View All'}}
+      </button>
+    </div>
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let booking">{{ booking.displayDate }}</td>
+      </ng-container>
+      <ng-container matColumnDef="course">
+        <th mat-header-cell *matHeaderCellDef class="text-center">Course</th>
+        <td mat-cell *matCellDef="let booking" class="text-center">{{ booking.courseName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="bookedBy">
+        <th mat-header-cell *matHeaderCellDef class="text-center">Booked By</th>
+        <td mat-cell *matCellDef="let booking" class="text-center">{{ booking.bookedBy }}</td>
+      </ng-container>
+      <ng-container matColumnDef="bookedFor">
+        <th mat-header-cell *matHeaderCellDef class="text-center">Booked For</th>
+        <td mat-cell *matCellDef="let booking" class="text-center">{{ booking.bookedFor }}</td>
+      </ng-container>
+      <ng-container matColumnDef="playFee">
+        <th mat-header-cell *matHeaderCellDef class="text-center">Play fee</th>
+        <td mat-cell *matCellDef="let booking" class="text-center">${{ booking.playFee }}</td>
+      </ng-container>
+      <ng-container matColumnDef="teeTime">
+        <th mat-header-cell *matHeaderCellDef class="text-center">Tee Time</th>
+        <td mat-cell *matCellDef="let booking" class="text-center">
+          <button *ngIf="booking.teeTimeId" (click)="showTeeTime(booking.teeTimeId, booking.courseName)" mat-button>View</button>
+          <span *ngIf="!booking.teeTimeId"><i>None reserved,<br>contact course</i></span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="cancel">
+        <th mat-header-cell *matHeaderCellDef class="text-center">Cancel</th>
+        <td mat-cell *matCellDef="let booking" class="text-center">
+          <button *ngIf="booking.cancelled === 'No' && checkCancellableDate(booking.dateFor)" (click)="cancel(booking.id, cancelDialog, booking)"  mat-button>Cancel</button>
+          <span *ngIf="booking.cancelled === 'Yes'" class="red">Cancelled<br>{{ booking.cancelledOn | date }}{{' ' + booking.cancelledTime }}</span>
+          <span *ngIf="booking.cancelled === 'No' && !checkCancellableDate(booking.dateFor)">Played</span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
+    </table>
+
+  </div>
+  <mat-paginator [pageSizeOptions]="[10, 20, 100]" showFirstLastButtons></mat-paginator>
+
+  <!--Template for inside tee time reservation modal, dispays reservation info-->
+  <ng-template #reservationDialog let-data>
+    <h4 mat-dialog-title>Your Tee Time Reservation</h4>
+    <mat-dialog-content>
+      <mat-list>
+        <mat-list-item><span class="teeTimeInfo">Time:</span> &nbsp;<span>{{ formatTime(data.data.included[1].attributes.start_time) }}</span></mat-list-item>
+        <mat-list-item><span class="teeTimeInfo">Course:</span> &nbsp;<span>{{ data.course }}</span></mat-list-item>
+        <mat-list-item><span class="teeTimeInfo">Status:</span> &nbsp;<span>{{ data.data.data.attributes.state }}</span></mat-list-item>
+        <mat-list-item><span class="teeTimeInfo">Reference:</span> &nbsp;<span>{{ data.data.data.attributes.booking_reference }}</span></mat-list-item>
+      </mat-list>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button class="mx-auto d-block" (click)="closeDialog()" mat-raised-button color="primary">Close</button>
+    </mat-dialog-actions>
+  </ng-template>
+
+  <ng-template #cancelDialog let-data>
+    <h4 mat-dialog-title>Booking Cancellation</h4>
+    <mat-dialog-content>
+      <h5>{{ data.data.courseName + ' on ' + data.data.displayDate }}</h5>
+      <p><b>Cancellation Policy:</b>
+        To cancel your reservations without penalty, please make the cancellation before 9a.m. the day prior to your scheduled round of golf. For example,
+        if your reservation is for Saturday and you need to cancel then you must do so before 9a.m. Friday morning.
+        If you must cancel after this time then there will be a cancellation fee of 50%. If the golf course is closed for any
+        reason, you will obviously not be charged for your reservation. Our policy is in place so that reservations are not
+        cancelled at the last minute, unnecessarily, using up spots that could be used by other members.</p>
+
+      <p>Are you sure you want to cancel this booking?</p>
+      <button mat-raised-button color="primary" (click)="cancelDialogClosed('yes', data.data.id)">Yes</button>
+      <button class="ml-2" color="primary" mat-raised-button (click)="cancelDialogClosed('no', null)">No</button>
+      <hr>
+    </mat-dialog-content>
+  </ng-template>
+
+</div>

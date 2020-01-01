@@ -1,0 +1,40 @@
+.userAvatar {
+    height:40px;
+    width:32px;
+    border-radius:50%;
+    object-fit: cover;
+    cursor: pointer;
+    margin: auto;
+}
+
+.selectableMembers:hover{
+    border-radius: 6px;
+    outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+}
+.selectableMembers{
+    background-color:white;
+    width: calc(100% - 6px);
+    margin-left: 3px;
+}
+.bottom-blue{
+    border-bottom: 1px solid #21a0c4;
+}
+.bottom-gray{
+    border-bottom: 2px solid lightgray;
+    border-top:1px solid lightgray;
+}
+.bottom-gray1{
+    border-top:1px solid lightgray;
+}
+
+
+/* For giving the material tabs a blueish color for active tab */
+::ng-deep .mat-ink-bar{
+    background-color: var(--primary-color,#21a0c4) !important;
+}
+::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
+    color:#21a0c4;
+    font-weight:bold;
+}
