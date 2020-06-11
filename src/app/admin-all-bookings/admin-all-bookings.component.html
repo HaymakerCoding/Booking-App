@@ -1,46 +1,61 @@
-<div class="container-fluid">
 
-  <div class="row">
-    <div class="col-12 col-lg-3 pl-0">
-      <app-admin-nav></app-admin-nav>
-    </div>
-
-    <div class="content container text-center pt-4 col-12 col-lg-9">
-
-      <div *ngIf="loading === true">
-        <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
-        <h6 class="mt-2 text-center">Loading...</h6>
-      </div>
-
-      <div *ngIf="loading === false;">
-        <h2 class="text-center">Golf Bookings ({{ bookings.length }})</h2>
-        <br>
-        <table class="table">
-          <tr class="text-center">
-            <th class="text-left">Date</th>
-            <th>Course</th>
-            <th>Event</th>
-            <th>Comments</th>
-            <th>Players</th>
-            <th>Created By</th>
-            <th>Tee Times</th>
-            <th>Edit</th>
-          </tr>
-          <tr class="text-center" *ngFor="let booking of bookings">
-            <td class="text-left align-middle">{{ booking.displayDate }}</td>
-            <td class="align-middle">{{ booking.courseName }}</td>
-            <td class="align-middle">{{ booking.eventName }}</td>
-            <td class="align-middle">{{ booking.comments }}</td>
-            <td class="align-middle">{{ booking.numPlayers }}</td>
-            <td class="align-middle">{{ booking.updatedByName }}</td>
-            <td class="align-middle"><button class="btn btn-outline-secondary">View</button></td>
-            <td><button class="btn btn-primary">Edit</button></td>
-          </tr>
-        </table>
-      </div>
-
-    </div>
-
-  </div>
-
+<div *ngIf="loading === true">
+  <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+  <h6 class="mt-2 text-center">Loading...</h6>
 </div>
+
+<div *ngIf="loading === false;">
+  <h2 class="text-center mt-3">Admin Bookings ({{ bookings.length }})</h2>
+  <br>
+  <table class="table">
+    <tr class="text-center">
+      <th class="text-left">Date</th>
+      <th>Course</th>
+      <th>Event</th>
+      <th>Comments</th>
+      <th>Created By</th>
+      <th>Tee Times</th>
+      <th>Edit</th>
+    </tr>
+    <tr class="text-center" *ngFor="let booking of bookings">
+      <td class="text-left align-middle">{{ booking.dateFor }}</td>
+      <td class="align-middle">{{ booking.courseName }}</td>
+      <td class="align-middle">{{ booking.eventName }}</td>
+      <td class="align-middle">{{ booking.comments }}</td>
+      <td class="align-middle">{{ booking.updatedByName }}</td>
+      <td class="align-middle">
+        <button mat-button color="primary" (click)="getTeemTimeInfo(teeTimeModal, booking)">
+          {{ 'View (' + booking.reservationIds.length + ')' }}
+        </button>
+      </td>
+      <td><button mat-raised-button color="primary">Edit</button></td>
+    </tr>
+  </table>
+</div>
+
+<ng-template #teeTimeModal let-data>
+  <div mat-dialog-title>
+    <h2 >Tee Times Booked</h2>
+    <h3 mat-dialog-title>{{ selectedCourse + ' on ' + selectedDate }}</h3>
+  </div>
+  <mat-dialog-content>
+    <div *ngFor="let d of data">
+      <div class="row">
+        <div class="col-6 blueText"><b>Start Time</b></div>
+        <div class="col-6">{{ formatTime(d.included[1].attributes.start_time) }}</div>
+      </div>
+      <div class="row">
+        <div class="col-6 blueText"><b>Status</b></div>
+        <div class="col-6">{{ d.data.attributes.state }}</div>
+      </div>
+      <div class="row">
+        <div class="col-6 blueText"><b>Reference</b></div>
+        <div class="col-6">{{ d.data.attributes.booking_reference }}</div>
+      </div>
+      <hr>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <button class="mx-auto d-block" color="primary" (click)="close()" mat-raised-button>Close</button>
+  </mat-dialog-actions>
+</ng-template>

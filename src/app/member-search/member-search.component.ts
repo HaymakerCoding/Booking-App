@@ -26,7 +26,6 @@ export class MemberSearchComponent implements OnInit {
   memberResults: BasicMember[] = [];
 
   @Input() buddyLists: BuddyNode[] = [];
-  @Input() buddyListNames: string[] = [];
 
   subscriptions: Subscription[] = [];
 
@@ -38,9 +37,10 @@ export class MemberSearchComponent implements OnInit {
       name: node.name,
       pic: node.children ? null : node.pic,
       memberId: node.children ? null : node.memberId,
+      listId: node.children ? null : node.listId,
       id: node.children ? null : node.id,
-      listName: node.children ? null : node.listName,
       length: node.children ? node.children.length : null,
+      parent: node.editMode === false ? true : false,
       level,
     };
   }
@@ -58,7 +58,6 @@ export class MemberSearchComponent implements OnInit {
     this.numMembers = 0;
     this.members = this.data.members;
     this.buddyLists = this.data.buddyLists;
-    this.buddyListNames = this.data.buddyListNames;
 
     this.treeControl = new FlatTreeControl<FlatNode>(
       node => node.level, node => node.expandable
@@ -112,6 +111,7 @@ export class MemberSearchComponent implements OnInit {
 }
 
 interface BuddyNode {
+  id: number;
   name: string;
   children?: Buddy[] ;
   pic?: any;
@@ -124,7 +124,7 @@ class Buddy {
     public name: string,
     public pic: any,
     public memberId: number,
-    public listName: string
+    public listId: number
   )  {}
 }
 

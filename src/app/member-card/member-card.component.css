@@ -2,7 +2,17 @@
     height:60px;
     width:48px;
     border-radius:50%;
-    object-fit: cover;
-    cursor: pointer;
-    margin: auto;
+    object-fit: cover;   
+}
+.custom-dialog-container .mat-dialog-container {
+    padding: 0!important;
+}
+.bigAvatar {
+    height:180px;
+    width:144px;
+    border-radius:50%;
+    object-fit: cover;   
+}
+mat-card{
+    background-color:#37474F; width:80vw; overflow-y: auto; overflow-x: hidden; position:absolute; top:10vh; left:10vw; height:80vh; border-top-left-radius:6px; border-top-right-radius:6px; padding:0;
 }

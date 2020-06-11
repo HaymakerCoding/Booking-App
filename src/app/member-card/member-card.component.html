@@ -1,107 +1,15 @@
 
-<div *ngIf="loading" style="width:100%; min-height:75vh; background-color:rgb(245, 242, 242);" class="text-center">
-  <div class="spinner-border text-info mt-5" style="width:8rem; height:8rem;" role="status">
-    <span class="sr-only">Loading...</span>
+<mat-card>
+  <div style="background-color:white; border-top-left-radius:6px; border-top-right-radius:6px;" class="p-3">
+    <img class="ml-3 mx-auto d-block" id="headerImg" src="../assets/logo.png" style="height:80px;">
   </div>
-</div>
-
-<div *ngIf="!loading">
-
-  <h4 class="text-center">{{loggedUser?.firstName + " " + loggedUser?.lastName}}</h4>
-
-  <mat-dialog-content>
-      <img *ngIf="loggedUser.pic" class="rounded mx-auto d-block userAvatar" [src]="userPicSrc">
-      <h5 class="text-center">{{ loggedUser?.memberNumber }}</h5>
-
-      <div *ngIf="today">{{today | date}}</div>
-
-      <div class="row">
-        <div class="col-6 col-lg-6 mt-1">
-          <b>Email: </b>
-        </div>
-        <div class="col-6 col-lg-6 mt-1">
-          <div>{{loggedUser?.email}}</div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-6 col-lg-6 mt-1">
-          <b>Member Since: </b>
-        </div>
-        <div class="col-6 col-lg-6 mt-1">
-          <div>{{loggedUser?.memberSince}}</div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-6 col-lg-6 mt-1">
-          <b>Package Type</b>
-        </div>
-        <div class="col-6 col-lg-6 mt-1">
-          <div>{{loggedUser?.membership}}</div>
-        </div>
-      </div>
-
-      <div class="row">
-          <div class="col-6 col-lg-6 mt-1">
-            <b>Last Min Club: </b>
-          </div>
-          <div class="col-6 col-lg-6 mt-1">
-            <div class="response">response</div>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-6 col-lg-6 mt-1">
-            <b>Competition Preference: </b>
-          </div>
-          <div class="col-6 col-lg-6 mt-1">
-            <div class="response">{{loggedUser?.memberCompetition}}</div>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-6 col-lg-6 mt-1">
-            <b>My Avg Score: </b>
-          </div>
-          <div class="col-6 col-lg-6 mt-1">
-            <div class="response">{{loggedUser?.avgScore}}</div>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-6 col-lg-6 mt-1">
-            <b>Prepaid Rounds: </b>
-          </div>
-          <div class="col-6 col-lg-6 mt-1">
-            <div class="response">WIP</div>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-6 col-lg-6 mt-1">
-            <b>Rounds Remaining: </b>
-          </div>
-          <div class="col-6 col-lg-6 mt-1">
-            <div class="response">WIP</div>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-6 col-lg-6 mt-1">
-            <b>Rounds Played to Date: </b>
-          </div>
-          <div class="col-6 col-lg-6 mt-1">
-            <div class="response">WIP</div>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-6 col-lg-6 mt-1">
-            <b>Days Advance Booking: </b>
-          </div>
-          <div class="col-6 col-lg-6 mt-1">
-            <div class="response">{{ loggedUser?.memberbookadvance }}</div>
-          </div>
-      </div>
-  </mat-dialog-content>
-
-</div>
-
-<mat-dialog-actions>
-  <button (click)="close()" class="mx-auto d-block" mat-button>Close</button>
-</mat-dialog-actions>
+  <mat-card-content class="p-3" style="color:white;">
+    <img *ngIf="memberData.pic" class="bigAvatar mx-auto d-block mb-3 mt-3" [src]="'data:image/jpeg;base64,' + memberData.pic">
+    <mat-icon *ngIf="!memberData.pic" class="mx-auto d-block mb-3 mt-3" style="font-size:80px; height:80px; padding-right:80px;">account_circle</mat-icon>
+    <h2 class="text-center">{{ memberData?.firstName + " " + memberData?.lastName }}</h2>
+    <h3 class="text-center">{{ memberData?.memberNumber }}</h3>
+  </mat-card-content>
+  <mat-card-actions class="pb-3">
+    <button (click)="close()" class="mx-auto d-block" color="primary" mat-raised-button>Close</button>
+  </mat-card-actions>
+</mat-card>

@@ -1,4 +1,4 @@
-<div class="container content pt-5 pb-5">
+<div class="content p-2 p-md-5">
 
   <h1 class="text-center mb-4">My Bookings</h1>
 
@@ -19,8 +19,9 @@
         {{ viewBookedBy === 'all' ? 'View Just Me' : 'View All'}}
       </button>
     </div>
+    <div class="table-container">
     <table mat-table [dataSource]="dataSource">
-      <ng-container matColumnDef="date">
+      <ng-container matColumnDef="date" sticky>
         <th mat-header-cell *matHeaderCellDef>Date</th>
         <td mat-cell *matCellDef="let booking">{{ booking.displayDate }}</td>
       </ng-container>
@@ -59,6 +60,7 @@
       <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: tableColumns"></tr>
     </table>
+    </div>
 
   </div>
   <mat-paginator [pageSizeOptions]="[10, 20, 100]" showFirstLastButtons></mat-paginator>

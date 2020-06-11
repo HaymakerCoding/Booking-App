@@ -7,31 +7,34 @@
             <!-- use a disabled button to provide padding for tree leaf -->
             <button mat-icon-button disabled></button>
             <!--this is the actual member data-->
-            <div class="row selectableMembers" (click)="chooseMember(node.memberId)">
-                <div class="col-3 text-center" style="display: flex; align-items: center;">
-                  <img *ngIf="node.pic != null" class="userAvatar" [src]="'data:image/jpeg;base64,' + node.pic">
-                  <mat-icon *ngIf="node.pic === null" style="font-size:40px; height:40px; width:40px; margin:auto;">account_circle</mat-icon>
-                </div>
-                <div class="col-5 text-center" style="display: flex; align-items: center;">
-                    {{ node.name }}
-                </div>
-                <div class="col-4 text-center" style="display: flex; align-items: center;">
-
-                </div>
+            <div class="row selectableMembers cursor" *ngIf="node.parent === false" (click)="chooseMember(node.memberId)">
+              <div class="col-3 text-center" style="display: flex; align-items: center;">
+                <img *ngIf="node.pic != null" class="userAvatar" [src]="'data:image/jpeg;base64,' + node.pic">
+                <mat-icon *ngIf="node.pic === null" style="font-size:40px; height:40px; width:40px; margin:auto;">account_circle</mat-icon>
               </div>
+              <div class="col-5 text-center" style="display: flex; align-items: center;">
+                  {{ node.name }}
+              </div>
+              <div class="col-4 text-center" style="display: flex; align-items: center;">
+
+              </div>
+            </div>
+            <div *ngIf="node.parent === true" style="font-weight:bold;">
+              {{ node.name }}&nbsp;(0)
+            </div>
           </mat-tree-node>
           <!-- This is the tree node template for expandable nodes -->
-          <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding class="bottom-gray1">
+          <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
             <button mat-icon-button matTreeNodeToggle
                     [attr.aria-label]="'toggle ' + node.name">
-              <mat-icon class="mat-icon-rtl-mirror mb-1">
+              <mat-icon class="mat-icon-rtl-mirror">
                 {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
               </mat-icon>
             </button>
             <div style="display:flex; width:100%; margin-top:4px;">
               <div style="font-weight:bold;">
                 {{ node.name }}
-                &nbsp; {{ '(' + node.length + '/' + MAX_BUDDIES_PER_LIST + ')' }}
+                &nbsp; {{ '(' + node.length + ')' }}
               </div>
               <div style="flex: 1"></div>
             </div>

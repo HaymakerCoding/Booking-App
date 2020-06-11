@@ -9,7 +9,8 @@ export class BasicMember {
       public memberId: number,
       public fullName: string | null,
       public memberNumber: number,
-      public pic: any
+      public pic: any,
+      public nickname: string
 
   ) {}
 

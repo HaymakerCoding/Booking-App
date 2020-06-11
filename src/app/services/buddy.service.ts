@@ -24,11 +24,36 @@ export class BuddyService {
      * @param memberId Member ID of member to add
      * @param list Name of list to add member to
      */
-    add(memberId, list: string) {
+    add(memberId, listId: number) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
       return this.http.post<CustomResponse>('https://clubeg.golf/common/api_REST/v1/booking/user/buddy/add/index.php',
-       { memberId, list }, {headers})
+       { memberId, listId }, {headers})
+      .pipe(map(response => {
+        return response;
+      }));
+    }
+
+    createList(listName: string) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
+      return this.http.post<CustomResponse>('https://clubeg.golf/common/api_REST/v1/booking/user/buddy/create-list/index.php',
+       { listName }, { headers })
+      .pipe(map(response => {
+        return response;
+      }));
+    }
+
+    /**
+     * Remove a list record and all child records (buddies)
+     * @param id PK of list
+     */
+    removeList(id: number) {
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
+      const params = new HttpParams().set('id', id.toString());
+      return this.http.delete<CustomResponse>('https://clubeg.golf/common/api_REST/v1/booking/user/buddy/remove-list/index.php',
+       { headers, params})
       .pipe(map(response => {
         return response;
       }));
@@ -51,12 +76,12 @@ export class BuddyService {
 
     /**
      * Get all buddies for the user for a specific list
-     * @param list List name
+     * @param listId List ID
      */
-    getAll(list: string) {
+    getAll(listId: number) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
-      const params = new HttpParams().set('list', list);
+      const params = new HttpParams().set('id', listId.toString());
       return this.http.get<CustomResponse>(`https://clubeg.golf/common/api_REST/v1/booking/user/buddy/get-all/index.php`,
        { params, headers })
       .pipe(map(response => {
@@ -81,11 +106,11 @@ export class BuddyService {
      * Change the name of a user's buddy list, update all records with the old list name
      * @param newName New name of the list
      */
-    updateListName(oldName: string, newName: string) {
+    updateListName(listId: number, newName: string) {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
       return this.http.patch<CustomResponse>('https://clubeg.golf/common/api_REST/v1/booking/user/buddy/update-list-name/index.php',
-       { oldName, newName }, { headers })
+       { listId, newName }, { headers })
       .pipe(map(response => {
         return response;
       }));

@@ -1,104 +1,66 @@
+<mat-tab-group>
+  <!--indidual booking-->
+  <mat-tab label="Book Individual">
+    <form [formGroup]="formIndividual" (ngSubmit)="submitForm(formIndividual.value, 'indiv')">
+      <mat-form-field>
+        <mat-label>Course</mat-label>
+        <mat-select formControlName="course">
+          <mat-option *ngFor="let course of courses" [value]="course.id">{{ course.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="datepicker" (click)="datepicker.open()" (dateChange)="onDateChange()" formControlName="date">
+        <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+        <mat-datepicker #datepicker (dateChange)="onDateChange()"></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Tee Time</mat-label>
+        <input matInput readonly formControlName="teeTime" (click)="openTeeTimeDialog('indiv')">
+        <button mat-button type="button" (click)="openTeeTimeDialog('indiv')" matSuffix>Get</button>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Comments</mat-label>
+        <textarea matInput formControlName="comments"></textarea>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="!formIndividual.valid" type="submit">Save</button>
+    </form>
+  </mat-tab>
+  <!--group booking-->
+  <mat-tab label="Book Group">
+    <form [formGroup]="formGroup" (ngSubmit)="submitForm(formGroup.value, 'group')">
+      <mat-form-field>
+        <mat-label>Course</mat-label>
+        <mat-select formConrolName="course">
+          <mat-option *ngFor="let course of courses" value="course.id">{{ course.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Event Name</mat-label>
+        <input matInput formConrolName="eventName">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="datepicker2" formControlName="date">
+        <mat-datepicker-toggle matSuffix [for]="datepicker2"></mat-datepicker-toggle>
+        <mat-datepicker #datepicker2></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label># of tee times</mat-label>
+        <mat-select>
+          <mat-option [value]="num" *ngFor="let num of nums100">{{ num }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button type="button" (click)="openTeeTimeDialog('group')">Get Tee Times</button>
+      <mat-form-field>
+        <mat-label>Comments</mat-label>
+        <textarea matInput></textarea>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="!formGroup.valid" type="submit">Save</button>
+    </form>
+  </mat-tab>
+  <mat-tab label="View Admin Bookings">
+    <app-admin-all-bookings></app-admin-all-bookings>
+  </mat-tab>
+</mat-tab-group>
 
-<div class="container-fluid">
-    <div class="row">
-      <div class="col-12 col-md-3 pl-0">
-        <app-admin-nav></app-admin-nav>
-      </div>
-      <div class="content container pt-4 col-12 col-md-9">
-        <h2 class="text-center mb-4">Book Group</h2>
-
-        <hr>
-
-        <form [formGroup]="form" (ngSubmit)="submitForm(form.value)">
-          <div class="form-group row">
-            <label for="courseSelect" class="col-sm-2 col-form-label">Course</label>
-            <div class="col-sm-10">
-              <select id="courseSelect" style="text-align: center; text-align-last: center;" class="form-control" formControlName="course">
-                <option value="0" selected>Select Course</option>
-                <option value="41">Pine View</option>
-                <option value="7">Canadian</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="eventNameInput" class="col-sm-2 col-form-label">Event Name</label>
-            <div class="col-sm-10">
-              <input type="text" id="eventNameInput" placeholder="Optional" class="form-control" formControlName="eventName">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="dateSelect" class="col-sm-2 col-form-label">Date</label>
-            <div class="col-sm-10">
-              <div class="form-group">
-                <div class="input-group">
-                  <input class="form-control" placeholder="yyyy-mm-dd" ngbDatepicker (dateSelect)="onDateSelect($event)"
-                        formControlName="date" [dayTemplate]="customDay" [markDisabled]="isDisabled" #d="ngbDatepicker">
-                  <div class="input-group-append">
-                    <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button">
-                      <i class="far fa-lg fa-calendar-alt"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <ng-template #customDay let-date let-currentMonth="currentMonth" let-selected="selected" let-disabled="disabled" let-focused="focused">
-                <span class="custom-day" [class.bookable]="isBookable(date)" [class.focused]="focused"
-                      [class.bg-primary]="selected" [class.hidden]="date.month !== currentMonth" [class.text-muted]="disabled">
-                  {{ date.day }}
-                </span>
-              </ng-template>
-
-            </div>
-          </div>
-          <div class="form-group row">
-              <label for="numPlayersInput" class="col-sm-2 col-form-label"># Players</label>
-              <div class="col-sm-10">
-                <input type="number" id="numPlayersInput" class="form-control" formControlName="numPlayers">
-              </div>
-          </div>
-          <div class="form-group row">
-            <label for="commentInput" class="col-sm-2 col-form-label">Comments</label>
-            <div class="col-sm-10">
-              <textarea class="form-control" id="commentInput" rows="4" style="width:100%;" formControlName="comments" placeholder="Optional"></textarea>
-            </div>
-          </div>
-        </form>
-        <hr>
-
-        <div class="form-group row">
-          <div class="col-sm-10 offset-md-1">
-            <button style="width:100%;" type="button" class="btn btn-outline-success" (click)="openModal()">Select Tee Times</button>
-          </div>
-        </div>
-
-
-        <div class="form-group row" *ngIf="teeTimes && teeTimes.length > 0">
-          <div class="col-sm-10 offset-md-1">
-            <h5 class="text-center">Tee Times: </h5>
-            <table class="table table-sm">
-              <tr class="text-center">
-                <th class="text-left">Tee Time</th>
-                <th>Hole</th>
-                <th>Round</th>
-                <th>Slots</th>
-              </tr>
-              <tr *ngFor="let teeTime of teeTimes" class="text-center">
-                <td class="text-left">{{ teeTime.startTime }}</td>
-                <td>{{ teeTime.hole }}</td>
-                <td>{{ teeTime.round }}</td>
-                <td>{{ teeTime.freeSlots }}</td>
-              </tr>
-            </table>
-          </div>
-        </div>
-
-        <div class="form-group row">
-          <div class="col-sm-10 offset-sm-1">
-            <button style="width:100%;" [disabled]="!form.valid" class="btn btn-primary d-block mx-auto">Submit</button>
-          </div>
-        </div>
-
-      </div>
-    </div><!--end main row-->
-
-</div><!--end main container-->

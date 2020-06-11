@@ -1,0 +1,27 @@
+<mat-tab-group (selectedTabChange)="tabChanged($event)">
+  <mat-tab label="Bookings by Course/Year">
+    <mat-form-field>
+      <mat-label>Year</mat-label>
+      <mat-select [(value)]="startingYear" (selectionChange)="getYearTotals($event.value)">
+        <mat-option [value]="year" *ngFor="let year of years">{{ year }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div class="chart-container">
+      <canvas #canvas></canvas>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Bookings by Month/Year">
+
+  </mat-tab>
+
+  <mat-tab label="Year by Year Performance">
+
+  </mat-tab>
+
+  <mat-tab label="Most Popular Courses">
+
+  </mat-tab>
+
+</mat-tab-group>
+

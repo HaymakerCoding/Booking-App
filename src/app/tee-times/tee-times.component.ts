@@ -51,10 +51,18 @@ export class TeeTimesComponent implements OnInit, OnDestroy {
     this.dialogRef.close({ teeTimes: this.selectedTeeTimes});
   }
 
+  /**
+   * Close/Cancel the material dialog
+   */
+  close() {
+    this.dialogRef.close();
+  }
+
   getTeeTimes() {
     this.loading = true;
     this.subscriptions.push(this.teeTimeService.getTeeTimes(this.data.date, this.spotsNeeded).subscribe(response => {
       if (response.status === '200') {
+        console.log(response);
         this.teeTimes = response.payload;
       } else if (response.status === '403') {
         this.dialogRef.close({

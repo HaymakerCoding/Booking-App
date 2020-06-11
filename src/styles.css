@@ -5,26 +5,22 @@
 *{
     font-family: 'Iceland';
 }
-.container{
-    min-height: calc(100vh - 90px)
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.content{
+    min-height: calc(100vh - 90px);
+    background-color:#fafafa;
+    margin-left:0!important;
+    margin-right:0!important;
+    width:100%;
+    margin-top:2px;
+    position: relative;
 }
-.btn-primary{
-    background-color:#4d648d!important;
-    border:1px solid white!important;
-    color:white!important;
-}
-.btn-primary:hover{
-    border:1px solid yellow!important;
-    color:yellow!important;
-}
-
-.star{
-    color:gold!important;
-    cursor: pointer;
-}
-.outline-star{
-    color:lightgray!important;
-    cursor: pointer;
+.buddy-list-names{
+    background-color: #f0f1f2;
+    border-radius:4px;
+    padding-right:5px;
+    border: 1px solid rgba(55, 71, 79, 0.6);
 }
 
 .tableHeaders{
@@ -45,9 +41,19 @@
 .mat-step-header .mat-step-icon-state-edit {
     color: white!important;
 }
+.blueText{
+    color:#21a0c4;
+}
 
 .cursor{
     cursor: pointer;
+}
+
+.app-full-bleed-dialog .mat-dialog-container {
+  padding: 0;
+  height:100%;
+  width:100%;
+  border-radius: 10px;
 }
 
 
@@ -63,6 +69,6 @@
     html{
         background-color:black!important;
     }
+
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+

@@ -9,7 +9,7 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 
 /**
- * Deals with guarding routes that require a user to be a logged in Adminsitrator
+ * Deals with guarding routes that require a user to be logged in
  *
  * @author Malcolm Roy
  */
@@ -31,7 +31,7 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot): Promise<boolean> {
       try {
         const token = localStorage.getItem('token');
-        if (token === null) {
+        if (!token || token === '' || token === null) {
           return false;
         } else {
           return true;

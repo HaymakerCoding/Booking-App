@@ -30,6 +30,10 @@
 }
 
 
+.whiteContainer{
+    width:100%; background-color:white; padding-left:10px;
+}
+
 /* For giving the material tabs a blueish color for active tab */
 ::ng-deep .mat-ink-bar{
     background-color: var(--primary-color,#21a0c4) !important;
@@ -37,4 +41,7 @@
 ::ng-deep .mat-tab-list .mat-tab-labels .mat-tab-label-active {
     color:#21a0c4;
     font-weight:bold;
+}
+:ng-deep .mat-tab-list{
+    font-weight: bold!important;
 }

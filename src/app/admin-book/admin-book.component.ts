@@ -1,12 +1,16 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { NgbModal, NgbModalRef, ModalDismissReasons, NgbModalConfig,
-  NgbDatepicker, NgbDateStruct, NgbCalendar , NgbDate} from '@ng-bootstrap/ng-bootstrap';
 import { TeeTime } from '../models/TeeTime';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { Booking } from '../models/Booking';
+
 import { AdminService } from '../services/admin.service';
 import { Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { TeeTimesComponent } from '../tee-times/tee-times.component';
+import { AdminBooking } from '../models/AdminBooking';
+import { DatePipe } from '@angular/common';
+import { ChronoGolfService } from '../services/chronoGolf.service';
 
 @Component({
   selector: 'app-admin-book',
@@ -35,11 +39,8 @@ import { Subscription } from 'rxjs';
 })
 export class AdminBookComponent implements OnInit, OnDestroy {
 
-  @ViewChild('teeTimeModal', {static: false}) private teeTimeModal: NgbModal;
-  private teeModalRef: NgbModalRef;
-  private dateModal: NgbDatepicker;
-
-  form: FormGroup;
+  formIndividual: FormGroup;
+  formGroup: FormGroup;
 
   courseId: number;
   date: string;
@@ -47,26 +48,58 @@ export class AdminBookComponent implements OnInit, OnDestroy {
   closeResult: string;
 
   spotsNeeded: number;
-  teeTimes: TeeTime[];
 
-  model: NgbDateStruct;
+  courses: Course[] = [];
+  nums100: number[] = [];
+
+  selectedTeeTimes: TeeTime[];
 
   subscriptions: Subscription[] = [];
+  matDialogRef: MatDialogRef<any>;
 
   constructor(
-    private calendar: NgbCalendar,
-    private modalService: NgbModal,
-    config: NgbModalConfig,
-    private adminService: AdminService
+    private snackbar: MatSnackBar,
+    private matDialog: MatDialog,
+    private adminService: AdminService,
+    private datePipe: DatePipe,
+    private chronoService: ChronoGolfService
   ) { }
 
   ngOnInit() {
-    this.form = new FormGroup({
-      course: new FormControl('0', Validators.compose([Validators.min(1), Validators.required])),
+    for (let x = 1; x < 100; x++) {
+      this.nums100.push(x);
+    }
+    this.initForms();
+    this.initCourses();
+  }
+
+  /**
+   * Initialize an array of courses the admin user can select tee times from
+   */
+  initCourses() {
+    this.courses.push({
+      id: 68,
+      name: 'Pine View',
+      partnerApiCourseId: null
+    });
+  }
+
+  /**
+   * Initialize the controls for the forms and set their Validators
+   */
+  initForms() {
+    this.formGroup = new FormGroup({
+      course: new FormControl('', Validators.compose([Validators.min(1), Validators.required])),
       eventName: new FormControl(''),
       numPlayers: new FormControl(1, Validators.required),
       date: new FormControl(''),
       comments: new FormControl('')
+    });
+    this.formIndividual = new FormGroup({
+      course: new FormControl('', Validators.compose([Validators.min(1), Validators.required])),
+      date: new FormControl(''),
+      comments: new FormControl(''),
+      teeTime: new FormControl(''),
     });
   }
 
@@ -76,57 +109,105 @@ export class AdminBookComponent implements OnInit, OnDestroy {
     });
   }
 
-  isDisabled = (date: NgbDate, current: {month: number}) => !this.checkDate(date);
-  isBookable = (date: NgbDate) => this.checkDate(date);
 
   /**
-   * Used to check dates in datepicker and allow booking of those in specific range. Also applies bkg color
-   * @param date Ngb date object
+   * Open a Dialog which contacts the external partner API to request tee times for the date/course provided.
+   * Tee times are shown in the dialog and once a user selects desired results are passed back to this component.
+   * @param type Type of Form Group or Indiv
    */
-  checkDate(date: NgbDate) {
-    const t = new Date();
-    const today = new NgbDate(t.getFullYear(), t.getMonth() + 1, t.getDate());
-    const maxDate = new NgbDate(t.getFullYear(), t.getMonth() + 1, t.getDate() + 7);
-    // alert(JSON.stringify(today));
-    if (date.equals(today) || ( date.before(maxDate)) && date.after(today) ) {
-      return true;
-    }
-  }
-
-  openModal() {
-    this.spotsNeeded = this.form.get('numPlayers').value;
-    // get todays date, and date 7 days from now for controlling range of date selection
-    const today = new Date().toISOString().slice(0, 10);
-    const temp = new Date();
-    const maxDate = temp.setDate(temp.getDate() + 6);
-    const maxDateString = new Date(maxDate).toISOString().slice(0, 10);
-
-    if (this.date === '' || !this.date) {
-      alert('Please choose a date first');
-    } else if (this.form.get('course').value === '0') {
+  openTeeTimeDialog(type: string) {
+    let form: FormGroup = null;
+    let numPlayers = null;
+    type === 'indiv' ? form = this.formIndividual : form = this.formGroup;
+    type === 'indiv' ? numPlayers = 1 : numPlayers = form.get('numPlayers').value;
+    const courseId = form.get('course').value;
+    const date: OurDate = this.getDate(form.get('date').value);
+    const today = new Date();
+    if (courseId === '') {
       alert('Please choose a course first');
-    } else if (this.form.get('numPlayers').value < 1) {
-      alert('Please enter at least 1 player');
-    } else if (this.date < today || this.date > maxDateString) {
-      alert('Invalid date. You must choose a date that is not in the past and no more than 7 days in advance.');
+    } else if (date.mysql === '' || date.mysql === null) {
+      alert('Please choose a date first');
+    } else if (this.getDate(today).mysql > date.mysql) { // check if date selected is not less than date today
+      alert('Error: Date entered cannot be in the past.');
     } else {
-      this.courseId = this.form.get('course').value;
-      this.teeModalRef = this.modalService.open(this.teeTimeModal, { size: 'lg', backdrop: 'static' });
-      this.teeModalRef.result.then((result) => {
-        // modal closed
-      }, (reason) => {
-        // modal dismissed
+      this.matDialogRef = this.matDialog.open(TeeTimesComponent, {
+        data: {
+          courseId,
+          courseName: this.courses.find(x => x.id === courseId).name,
+          date: date.mysql,
+          displayDate: date.displayDate,
+          numPlayers
+        }
       });
+      this.subscriptions.push(this.matDialogRef.afterClosed().subscribe(response => {
+        // check if there is at least 1 id returned, indicates successfully returned tee time(s)
+        if (response.teeTimes[0].id) {
+          if (type === 'indiv') {
+            this.selectedTeeTimes = [];
+            this.selectedTeeTimes.push(response.teeTimes[0]);
+            form.get('teeTime').setValue(this.selectedTeeTimes[0].startTime);
+          } else {
+            this.selectedTeeTimes = response.teeTimes;
+          }
+        } else {
+          alert('Sorry there was an error getting the tee times');
+        }
+      }));
     }
   }
 
-  private getDismissReason(reason: any): string {
-    if (reason === ModalDismissReasons.ESC) {
-      return 'by pressing ESC';
-    } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
-      return 'by clicking on a backdrop';
-    } else {
-      return  `with: ${reason}`;
+  /**
+   * Transform a JavaScript Date into our own Date obj holding both a mysql and formatted version
+   * @param d Date
+   */
+  getDate(d): OurDate {
+    const tzoffset = (d).getTimezoneOffset() * 60000;
+    const mysqlDate = new Date(d - tzoffset).toJSON().slice(0, 10);
+    const weekday = this.getDayText(d.getDay());
+    const month = this.getMonthText(d.getMonth());
+    const day = d.getDate();
+    const displayDate = weekday + ' ' + month + ' ' + day;
+    const ourDate: OurDate = {
+      mysql: mysqlDate,
+      displayDate
+    };
+    return ourDate;
+  }
+
+  /**
+   * Change the Java Date day number for text
+   * @param num number representing day from Java Date
+   */
+  getDayText(num: number) {
+    switch (num) {
+    case 0 : return 'Sun';
+    case 1 : return 'Mon';
+    case 2 : return 'Tue';
+    case 3 : return 'Wed';
+    case 4 : return 'Thu';
+    case 5 : return 'Fri';
+    case 6 : return 'Sat';
+    }
+  }
+
+  /**
+   * Change the Java Date month number for text
+   * @param num number representing month from Java Date
+   */
+  getMonthText(num: number) {
+    switch (num) {
+    case 0 : return 'January';
+    case 1 : return 'February';
+    case 2 : return 'March';
+    case 3 : return 'April';
+    case 4 : return 'May';
+    case 5 : return 'June';
+    case 6 : return 'July';
+    case 7 : return 'August';
+    case 8 : return 'September';
+    case 9 : return 'October';
+    case 10 : return 'November';
+    case 11 : return 'December';
     }
   }
 
@@ -134,19 +215,9 @@ export class AdminBookComponent implements OnInit, OnDestroy {
    * Fires on every select/change of the datepicker. Set the current date. Erase any tee times as they are dependant on date.
    * @param event Event containing date object
    */
-  onDateSelect(event) {
-    this.teeTimes = [];
-    this.date = (event.year + '-' + event.month + '-' + event.day);
-  }
-
-  /**
-   * Fired when tee times are returned from the child component 'tee-times'. Supplies us the user selected tee times.
-   * @param teeTimes Array of tee times
-   */
-  teeTimesSelected(teeTimes) {
-    this.teeTimes = [];
-    this.teeTimes = teeTimes;
-    this.teeModalRef.close();
+  onDateChange() {
+    this.selectedTeeTimes = [];
+    this.formIndividual.get('teeTime').setValue(null);
   }
 
   /**
@@ -156,24 +227,87 @@ export class AdminBookComponent implements OnInit, OnDestroy {
    * Then reservation IDs are stored in our database linked to the booking record.
    * @param formData Form field data
    */
-  submitForm(formData) {
-    const booking = new Booking(
-      null, // new entry so database will provide
-      this.form.get('course').value,
-      null, // course Name is null here as we don't store in db
-      this.date,
-      null, // just for display purposes, not db
-      this.form.get('eventName').value,
-      this.form.get('comments').value,
-      null, // update time will be provided on server
-      null, // user id will be provided on server
-      null, // member name not stored in booking record
-      this.form.get('numPlayers').value, null, null, null, 'No', null, null, null, null
+  submitForm(formData, type: string) {
+    const booking = new AdminBooking(
+      null,
+      formData.course,
+      null,
+      formData.date,
+      null,
+      formData.comments,
+      formData.eventName,
+      null,
+      null,
+      null
     );
-    this.subscriptions.push(this.adminService.addBooking(booking, this.teeTimes).subscribe(response => {
-      alert('Booking saved....But error booking with Chronogolf. WIP');
-      console.log(response.status);
-    }));
+    console.log(this.selectedTeeTimes);
+    // format the date to Mysql format for db
+    booking.dateFor = this.datePipe.transform(booking.dateFor, 'yyyy-MM-dd');
+    this.getReservationIds(this.selectedTeeTimes, formData.course, booking);
+
   }
 
+  /**
+   * Final Step in booking, send the booking data and reservation Ids to the database to persist
+   * @param reservationIds External API reservation Ids for tee times booked with them
+   * @param booking Our booking record, parent record to the reservation ids
+   */
+  saveBooking(reservationIds: number[], booking) {
+    if (reservationIds.length < 1) {
+      alert('Sorry something went wrong with creating the reservations with Chronogolf');
+    } else {
+      this.subscriptions.push(this.adminService.addBooking(booking, reservationIds).subscribe(response => {
+        if (response.status === 201) {
+          this.snackbar.open('Booking Created!', '', { duration: 3000 });
+          this.formIndividual.reset();
+          this.formGroup.reset();
+        } else {
+          console.error(response);
+          alert('Sorry there was a problem saving the booking');
+        }
+      }));
+    }
+  }
+
+  /**
+   * Use the tee times Ids to create reservations with the external partner api and return the reservation Ids
+   */
+  getReservationIds(selectedTeeTimes: TeeTime[], courseId, booking) {
+    const reservationIds = [];
+    selectedTeeTimes.forEach(x => {
+      this.subscriptions.push(this.chronoService.addReservation(x.id, 18, courseId ).subscribe(response => {
+        console.log(response);
+        if (response.status === 201) {
+          // reservation was created, payload contains the reservation ID we need to save in our db
+          reservationIds.push(response.payload);
+        } else {
+          console.error(response);
+        }
+        if (reservationIds.length === selectedTeeTimes.length) {
+          this.saveBooking(reservationIds, booking);
+        }
+      }));
+    });
+
+  }
+
+}
+
+
+
+/**
+ * Obj for holding the id and name of course to book tee times for
+ */
+interface Course {
+  id: number;
+  name: string;
+  partnerApiCourseId: number; // different ID used by external api system to identify the course
+}
+
+/**
+ * A Custom date object holding properties for a mysql formatted date for database and a display version
+ */
+interface OurDate {
+  mysql: any;
+  displayDate: string;
 }

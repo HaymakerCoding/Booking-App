@@ -11,3 +11,28 @@ table{
     color:#21a0c4;
     font-weight: bold;
 }
+
+
+.table-container{
+    width:100%;
+    overflow: auto;
+}
+
+@media only screen and (max-width:800px){
+    table{
+        width:800px;
+    }
+    
+    th.mat-column-position, td.mat-column-position {
+      padding-left: 8px;
+    }
+
+    .mat-table-sticky:first-child {
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .mat-table-sticky:last-child {
+      border-left: 1px solid #e0e0e0;
+    }
+
+}

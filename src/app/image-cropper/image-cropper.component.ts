@@ -27,7 +27,7 @@ export class ImageCropperComponent implements OnInit, OnDestroy, AfterViewInit, 
   imageReady: boolean;
 
   private MAXFILESIZE = 5000000; // 5MB limit
-  private suportedFiles = ['jpeg', 'jpg', 'gif', 'png', 'webp'];
+  private suportedFiles = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png', 'image/webp'];
 
   public imageDestination: string;
 
@@ -152,10 +152,10 @@ export class ImageCropperComponent implements OnInit, OnDestroy, AfterViewInit, 
         }
       };
       if (imageFile.size <= this.MAXFILESIZE) {
-        if (this.suportedFiles.includes(extension)) {
+        if (this.suportedFiles.includes(imageFile.type)) {
           reader.readAsDataURL(imageFile);
         } else {
-          alert('Sorry this is not a valid file type');
+          alert('Sorry this is not a valid file type' + (imageFile.type));
         }
       } else {
         alert('Sorry this file exceeds the maximum size of 5MB.');

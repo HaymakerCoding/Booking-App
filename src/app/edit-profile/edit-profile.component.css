@@ -15,3 +15,13 @@ label{
     margin-bottom:15px;
     margin: auto;
 }
+input.ng-invalid{
+    border-bottom-color: red;
+}
+.full-width{
+    width:100%;
+}
+form{
+    background-color:white;
+    padding:5px;
+}

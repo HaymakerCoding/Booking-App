@@ -1,58 +1,78 @@
-<mat-drawer-container class="containerX" autosize>
-  <mat-drawer #drawer class="sidenav" [autoFocus]="false">
-      <a mat-button *ngIf="userLoggedIn" (click)="drawer.close()" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-item menuItems nav-link text-left" id="listLink" routerLink="Book">
-        <mat-icon class="small-icon">sports_golf</mat-icon>Book
-      </a>
-      <a mat-button *ngIf="userLoggedIn" (click)="drawer.close()" routerLinkActive="active-link" class="nav-item menuItems nav-link text-left" id="addLink" routerLink="LMC">
-        <mat-icon class="small-icon">timelapse</mat-icon>LMC
-      </a>
-      <a mat-button class="nav-item menuItems nav-link text-left" (click)="drawer.close()" routerLinkActive="active-link" id="inviteLink" routerLink="Buddy-List">
-        <mat-icon class="small-icon">emoji_people</mat-icon>Buddy List
-      </a>
-      <a mat-button *ngIf="userLoggedIn" (click)="drawer.close()" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-item menuItems nav-link text-left" id="regLink" routerLink="Book/All">
-        <mat-icon class="small-icon">golf_course</mat-icon>My Bookings
-      </a>
-      <a mat-button *ngIf="userLoggedIn" (click)="drawer.close()" routerLinkActive="active-link" class="nav-item menuItems nav-link text-left" id="tripsLink" routerLink="User/Edit">
-        <mat-icon class="small-icon">edit</mat-icon>Edit Profile
-      </a>
-      <a mat-button *ngIf="loggedUser && loggedUser.isAdmin" (click)="drawer.close()" routerLinkActive="active-link" class="nav-item menuItems nav-link text-left" id="adminLink" routerLink="Admin">
-        <mat-icon class="small-icon">supervisor_account</mat-icon>Admin
-      </a>
-      <a mat-button *ngIf="userLoggedIn" (click)="[logout(), drawer.close()]" class="nav-item menuItems nav-link text-left" id="logoutLink">
-        <mat-icon class="small-icon">exit_to_app</mat-icon>Logout
-      </a>
-  </mat-drawer>
-  <div class="sidenav-content">
-    <mat-toolbar *ngIf="currentURL != '/' && currentURL != '/Login'">
-      <mat-toolbar-row>
-          <button mat-icon-button (click)="drawer.toggle()" *ngIf="loggedUser">
-            <mat-icon>menu</mat-icon>
-          </button>
-          <img class="ml-3" id="headerImg" src="../assets/clubegheader.png" style="height:100%;">
-          <span class="filler"></span>
-          <div *ngIf="loggedUser">
-            <div class="row">
-              <div class="col-6 iconBoxes">
-                <mat-icon class="icons" routerLink="User/Messages" matBadge="{{ numUserMessages }}" matTooltip="Review your messages">message</mat-icon>
-              </div>
-              <div class="col-6 iconBoxes" mat-con-button [matMenuTriggerFor]="userMenu">
-                <img *ngIf="loggedUser.pic != null" class="img-thumbnail userAvatar" [src]="'data:image/jpeg;base64,' + loggedUser.pic">
-                <mat-icon *ngIf="loggedUser.pic === null" style="font-size:60px; cursor:pointer; height:60px; margin:auto;">account_circle
-                </mat-icon>
-              </div>
-              <mat-menu #userMenu class="p-3">
-                <h6 class="text-center" style="font-weight:bold;">{{ loggedUser.firstName }}</h6>
-                <button mat-button (click)="openMemberDialog()">View Member Card</button><br>
-                <button routerLink="User/Edit" mat-button>Edit Profile</button><br>
-                <button mat-button (click)="logout()">Logout</button>
-              </mat-menu>
-            </div>
-
-
+<mat-toolbar *ngIf="currentURL != '/' && currentURL != '/Login'">
+  <mat-toolbar-row>
+      <img class="ml-3" id="headerImg" src="../assets/clubegheader.png" style="height:100%;">
+      <span class="filler"></span>
+      <div *ngIf="loggedUser">
+        <div class="row">
+          <div class="col-6 iconBoxes">
+            <mat-icon class="icons" routerLink="User/Messages" matBadge="{{ numUserMessages }}" matTooltip="Review your messages">message</mat-icon>
           </div>
-      </mat-toolbar-row>
-    </mat-toolbar>
-  </div>
-  <router-outlet></router-outlet>
-</mat-drawer-container>
+          <div class="col-6 iconBoxes" mat-con-button [matMenuTriggerFor]="userMenu">
+            <img *ngIf="loggedUser.pic != null" class="img-thumbnail userAvatar" [src]="'data:image/jpeg;base64,' + loggedUser.pic">
+            <mat-icon *ngIf="loggedUser.pic === null" style="font-size:60px; cursor:pointer; height:60px; margin:auto;">account_circle
+            </mat-icon>
+          </div>
+          <mat-menu #userMenu class="p-3">
+            <h6 class="text-center" style="font-weight:bold;">{{ loggedUser.firstName }}</h6>
+            <button mat-button (click)="openMemberDialog()">View Member Card</button><br>
+            <button (click)="openProfile()" mat-button>View Profile</button><br>
+            <button routerLink="User/Edit" mat-button>Edit Profile</button><br>
+            <button mat-button (click)="openChangePass(changePasswordDialog)">Change Password</button><br>
+            <button mat-button *ngIf="loggedUser && loggedUser.isAdmin" routerLink="Admin">Admin</button><br>
+            <button mat-button (click)="logout()">Logout</button>
+          </mat-menu>
+        </div>
+      </div>
+  </mat-toolbar-row>
+  <mat-toolbar-row class="matToolBar2" style="height:50px;">
+    <a mat-button *ngIf="userLoggedIn" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-item menuItems nav-link text-left" id="listLink" routerLink="Book">
+      <mat-icon class="small-icon mr-2">sports_golf</mat-icon>Book
+    </a>
+    <a mat-button *ngIf="userLoggedIn" routerLinkActive="active-link" class="nav-item menuItems nav-link text-left" id="addLink" routerLink="LMC">
+      <mat-icon class="small-icon mr-2">timelapse</mat-icon>LMC
+    </a>
+    <a mat-button class="nav-item menuItems nav-link text-left" routerLinkActive="active-link" id="inviteLink" routerLink="Buddy-List">
+      <mat-icon class="small-icon mr-2">emoji_people</mat-icon>Buddies
+    </a>
+    <a mat-button *ngIf="userLoggedIn" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" class="nav-item menuItems nav-link text-left" id="regLink" routerLink="Book/All">
+      <mat-icon class="small-icon">golf_course</mat-icon>My Bookings
+    </a>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<ng-template #changePasswordDialog let-data>
+  <h1 mat-dialog-title>Change Password</h1>
+  <mat-dialog-content>
+    <form [formGroup]="form" #restForm (ngSubmit)="updatePassword(form.value)">
+      <mat-form-field class="full-width">
+        <mat-label>Old Password</mat-label>
+        <input matInput type="password" formControlName="oldPass" required>
+        <mat-error *ngIf="form.hasError('required', 'oldPass')">
+            Please enter your old password
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>New Password</mat-label>
+        <input matInput type="password" formControlName="newPass" required>
+        <mat-error *ngIf="form.hasError('required', 'newPass')">
+            Please enter a new password
+        </mat-error>
+        <mat-error *ngIf="form.hasError('minlength', 'newPass')">
+            Password must be at least 6 characters long
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>Re-type Password</mat-label>
+        <input matInput type="password" formControlName="newPass2" [errorStateMatcher]="matcher" required>
+        <mat-error *ngIf="form.hasError('mismatch')">
+            Passwords do not match
+        </mat-error>
+      </mat-form-field>
+      <div class="mx-auto">
+        <button mat-raised-button [disabled]="!form.valid" color="primary" type="submit">Update</button>
+        <button mat-raised-button class="ml-3" color="primary" type="button" (click)="closeDialog()">Cancel</button>
+      </div>
+    </form>
+  </mat-dialog-content>
+</ng-template>
 

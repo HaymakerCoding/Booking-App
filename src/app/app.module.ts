@@ -1,11 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { HashLocationStrategy, LocationStrategy, DatePipe } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { NaturalType } from './pipes/naturalPipe';
+
 
 /* Material Stuff */
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -31,6 +31,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatCardModule } from '@angular/material/card';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -52,11 +53,9 @@ import { TeeTimesComponent } from './tee-times/tee-times.component';
 import { MemberCardComponent } from './member-card/member-card.component';
 import { AdminAllBookingsComponent } from './admin-all-bookings/admin-all-bookings.component';
 import { AdminBookIndivComponent } from './admin-book-indiv/admin-book-indiv.component';
-import { AdminNavComponent } from './admin-nav/admin-nav.component';
 import { AllBookingsComponent } from './all-bookings/all-bookings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BookComponent } from './book/book.component';
-import { LMCComponent } from './lmc/lmc.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { InviteComponent } from './invite/invite.component';
@@ -65,6 +64,9 @@ import { BuddyListComponent } from './buddy-list/buddy-list.component';
 import { MemberSearchComponent } from './member-search/member-search.component';
 import { ImageCropperComponent } from './image-cropper/image-cropper.component';
 import { MatNativeDateModule } from '@angular/material/core';
+import { ProfileComponent } from './profile/profile.component';
+import { AdminMembersComponent } from './admin-members/admin-members.component';
+import { MetricsComponent } from './metrics/metrics.component';
 
 const appRoutes: Routes = [
   { path: 'Login', component: LoginComponent },
@@ -103,22 +105,23 @@ const appRoutes: Routes = [
     MemberCardComponent,
     AdminAllBookingsComponent,
     AdminBookIndivComponent,
-    AdminNavComponent,
     AllBookingsComponent,
     BookComponent,
-    NaturalType,
-    LMCComponent,
     InviteComponent,
     MessagesComponent,
     BuddyListComponent,
     MemberSearchComponent,
-    ImageCropperComponent
+    ImageCropperComponent,
+    ProfileComponent,
+    AdminMembersComponent,
+    MetricsComponent
   ],
   entryComponents: [
     MemberCardComponent,
     TeeTimesComponent,
     MemberSearchComponent,
-    ImageCropperComponent
+    ImageCropperComponent,
+    ProfileComponent
   ],
   imports: [
     NgbModule,
@@ -150,6 +153,7 @@ const appRoutes: Routes = [
     MatTreeModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatCardModule,
     DragDropModule,
     RouterModule.forRoot(
       appRoutes
@@ -163,6 +167,7 @@ const appRoutes: Routes = [
     AuthService,
     AdminGuard,
     AuthGuard,
+    DatePipe,
     {provide: LocationStrategy, useClass: HashLocationStrategy}
   ],
   bootstrap: [AppComponent]

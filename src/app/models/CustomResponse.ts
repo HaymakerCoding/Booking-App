@@ -7,7 +7,7 @@ export class CustomResponse {
 
   constructor(
       public status: string | number,
-      public payload: any[]
+      public payload: (any[] | any)
 
   ) {}
 

@@ -1,36 +1,51 @@
-<h1 mat-dialog-title class="text-center">Tee Times for {{ courseName }}</h1>
-<mat-dialog-content>
-  <div *ngIf="loading" style="width:100%; min-height:75vh; background-color:rgb(245, 242, 242);" class="text-center">
-    <div class="spinner-border text-info mt-5" style="width:8rem; height:8rem;" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-  </div>
+<div *ngIf="loading === true">
+  <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+  <h6 class="mt-2 text-center">Loading...</h6>
+</div>
 
-  <div *ngIf="!loading">
+<div *ngIf="loading === false" class="mt-3 mb-3">
+  <div matDialogTitle>
+    <h3 class="text-center">Tee Times for {{ courseName }}</h3>
     <h4 class="text-center">{{ displayDate }}</h4>
     <h5 class="text-center">Spots: {{ spotsSelected+'/'+ spotsNeeded }} </h5>
-    <button (click)="save()" mat-raised-button color="primary" class="mx-auto d-block">Save</button>
-    <br>
-
-    <table class="table table-sm">
-      <tr class="text-center">
-        <th class="text-left">Start</th>
-        <th>Hole</th>
-        <th>Round</th>
-        <th>Slots</th>
-        <th>Book</th>
-      </tr>
-      <tr *ngFor="let teeTime of teeTimes" class="text-center">
-        <td class="text-left">{{ teeTime.startTime }}</td>
-        <td>{{ teeTime.hole }}</td>
-        <td>{{ teeTime.round }}</td>
-        <td>{{ teeTime.freeSlots }}</td>
-        <td><input type="checkbox" (click)="addTeeTime(teeTime)"></td>
-      </tr>
-    </table>
+    <div class="row">
+      <div class="col-3 text-left blueText">
+        Start
+      </div>
+      <div class="col-3 text-center blueText">
+        Hole
+      </div>
+      <div class="col-3 text-center blueText">
+        Slots
+      </div>
+      <div class="col-3 text-center blueText">
+        Book
+      </div>
+    </div>
     <hr>
-    <button (click)="save()" mat-raised-button color="primary" class="mx-auto d-block">Save</button>
   </div>
-</mat-dialog-content>
+  <mat-dialog-content>
 
+    <div class="row" *ngFor="let teeTime of teeTimes">
+      <div class="col-3 text-left">
+        {{ teeTime.startTime }}
+      </div>
+      <div class="col-3 text-center">
+        {{ teeTime.hole }}
+      </div>
+      <div class="col-3 pl-4 text-center">
+        {{ teeTime.freeSlots }}
+      </div>
+      <div class="col-3 text-center" style="padding-left:30px;">
+        <input type="checkbox" (click)="addTeeTime(teeTime)">
+      </div>
+    </div>
+
+  </mat-dialog-content>
+  <mat-dialog-actions style="border-top:1px solid lightgrey;">
+    <button (click)="save()" mat-raised-button color="primary" class="mx-auto d-block">Save</button>
+    <button (click)="close()" mat-raised-button color="primary" class="mx-auto d-block">Cancel</button>
+  </mat-dialog-actions>
+
+</div>
 

@@ -107,7 +107,7 @@ export class AllBookingsComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   getBookings(year) {
     this.subscriptions.push(this.bookingService.getAllBookings(year).subscribe(response => {
-      if (response.status === '200') {
+      if (response.status === 200) {
         this.bookings = response.payload;
         this.masterBookings = this.bookings;
         this.dataSource = new MatTableDataSource(this.bookings);
@@ -115,7 +115,7 @@ export class AllBookingsComponent implements OnInit, OnDestroy, AfterViewInit {
         this.formatDates();
       } else {
         alert('Sorry there was a problem with the database.');
-        console.error(response.status);
+        console.error(response);
       }
     }));
   }

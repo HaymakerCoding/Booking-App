@@ -24,7 +24,8 @@ export class Booking {
     public teeTime: any,
     public teeTimeId: any,
     public cancelledOn: any,
-    public cancelledTime: any
+    public cancelledTime: any,
+    public invite: string
 
   ) {}
 

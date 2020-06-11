@@ -1,4 +1,4 @@
-<div class="container content pt-5 pb-5">
+<div class="content p-2 p-md-5">
 
   <div *ngIf="loading === true">
     <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
@@ -21,8 +21,6 @@
             <button [ngClass]="{active: date[0] === dateSelected }" (click)="selectDate(date)" class="btn btn-outline-secondary mx-auto d-block mt-1 dateBtns">{{ date[1] }}</button>
           </div>
         </div>
-        <hr>
-        <div [innerHTML]="announcementHTML"></div>
     </ng-template>
 
     <!--STEP 2 SELECT COURSE-->
@@ -62,16 +60,24 @@
         <h4 class="text-center mb-1">Enter the member number(s) for each player</h4>
         <h5 class="text-center mb-3">{{ courseSelected.courseName + ", " + dateSelected[1] + ', for ' + spotsSelected }}</h5>
         <div class="row">
-          <div class="col-12 col-md-6 offset-md-3">
+          <div class="col-10 col-md-5 offset-md-3">
             <mat-form-field *ngFor="let spot of spotsSelectedArray; let i = index;">
-
               <mat-label>
                 {{ !membersSelected[i].fullName ? 'Enter Player ' + (i+1) + ' Member #' : membersSelected[i].fullName }}
               </mat-label>
-              <input (input)="findMember($event.target, i)" #numInput matInput type="number">
-              <mat-icon matSuffix class="cursor" (click)="showMemberSearch(numInput, i)">search</mat-icon>
+              <input (input)="findMember($event.target, i)" [value]="membersSelected[i].memberNumber" #numInput matInput type="number">
+              <mat-icon matSuffix class="cursor" matTooltip="Search by name" (click)="showMemberSearch(numInput, i)">search</mat-icon>
               <mat-icon *ngIf="membersSelected[i].fullName" style="color:green;" matSuffix>check</mat-icon>
             </mat-form-field>
+
+          </div>
+          <div class="col-2 col-md-1">
+            <div *ngFor="let spot of spotsSelectedArray; let i = index;" class="text-center" style="min-height:65px!important;">
+              <mat-label>
+                Reserve?
+              </mat-label>
+              <mat-checkbox (change)="reserveSpotForAnother(i, $event)" [checked]="membersSelected[i].reserved === true" matTooltip="Reserve the spot in your name, for another player. Can then be offered in an Invite."></mat-checkbox>
+            </div>
           </div>
         </div>
       </div>
@@ -82,6 +88,7 @@
       <h4 class="text-center mb-1">Choose tee time(s) and select finish to complete your booking</h4>
       <h5 *ngIf="courseSelected" class="text-center mb-4">{{ courseSelected.courseName + ", " + dateSelected[1] + ', for ' + spotsSelected }}</h5>
       <button mat-raised-button color="primary" class="mx-auto d-block mb-2" (click)="showTeeTimeModal()">Get Tee Times</button>
+      <p *ngIf="selectedTeeTimes">* Click and drag desired tee times to table below</p>
       <div cdkDropListGroup>
         <!--list of tee times available, corresponding drop boxes are the tee time columns in table-->
         <div *ngIf="selectedTeeTimes"
@@ -107,9 +114,9 @@
             <td mat-footer-cell *matFooterCellDef></td>
           </ng-container>
           <ng-container matColumnDef="teeTime">
-            <th class="text-center" mat-header-cell *matHeaderCellDef>Tee Time(s)</th>
+            <th class="text-center" mat-header-cell *matHeaderCellDef>Tee Time</th>
             <td class="text-center" mat-cell *matCellDef="let member">
-              <div cdkDropList #dropList="cdkDropList" [cdkDropListData]="member" style="height:50px; width:100%; position:relative;" (cdkDropListDropped)="drop($event, member.memberId)">
+              <div cdkDropList #dropList="cdkDropList" [cdkDropListData]="member" style="height:50px; width:100%; position:relative;" (cdkDropListDropped)="drop($event, member)">
                 <div *ngIf="member.teeTime" class="dragableTimes" style="height:100%;" cdkDrag>
                   {{ member.teeTime.startTime }}
                 </div>
@@ -188,7 +195,7 @@
           <mat-icon>check</mat-icon>
         </ng-template>
         <!--STEP 1-->
-        <mat-step [completed]="dateSelected">
+        <mat-step [editable]="!lmc" [completed]="dateSelected">
           <ng-template matStepLabel>Select Date</ng-template>
           <ng-container *ngTemplateOutlet="stepOne"></ng-container>
         </mat-step>
@@ -223,5 +230,8 @@
     </ng-template>
 
   </div>
+
+  <hr>
+  <div [innerHTML]="announcementHTML"></div>
 
 </div>

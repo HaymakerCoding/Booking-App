@@ -11,7 +11,7 @@ export class Message {
     public memberFrom: number,
     public msgText: string,
     public subject: string,
-    public hasRead: boolean,
+    public hasRead: string, // MySQL boolean is actaully a 1 or 0 char
     public dateTime: any
 
   ) {}

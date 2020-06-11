@@ -1,29 +1,82 @@
-<div class="container content pt-5 pb-5">
+<div class="content p-2 p-md-5">
 
   <h1 class="text-center">My Messages</h1>
 
   <table mat-table [dataSource]="dataSource" style="width:100%;">
     <ng-container matColumnDef="subject">
       <th mat-header-cell *matHeaderCellDef>Subject</th>
-      <td mat-cell *matCellDef="let message">{{ message.subject }}</td>
+      <td mat-cell *matCellDef="let message">
+        {{ getSubject(message) }}
+      </td>
     </ng-container>
     <ng-container matColumnDef="from">
       <th mat-header-cell *matHeaderCellDef class="text-center">From</th>
-      <td mat-cell *matCellDef="let message" class="text-center">{{ message.memberFrom }}</td>
+      <td mat-cell *matCellDef="let message" class="text-center">{{ getFrom(message) }}</td>
     </ng-container>
     <ng-container matColumnDef="dateTime">
-      <th mat-header-cell *matHeaderCellDef class="text-center">Date/Time</th>
-      <td mat-cell *matCellDef="let message" class="text-center">{{ message.dateTime }}</td>
+      <th mat-header-cell *matHeaderCellDef class="text-center">Received</th>
+      <td mat-cell *matCellDef="let message" class="text-center">{{ getReceived(message.dateTime) }}</td>
     </ng-container>
-    <ng-container matColumnDef="delete">
-      <th mat-header-cell *matHeaderCellDef class="text-center">Delete</th>
-      <td mat-cell *matCellDef="let message" class="text-center">
-        <mat-icon (click)="deleteMsg(message.id)">delete_outline</mat-icon>
-      </td>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef class="text-center">Status</th>
+      <td mat-cell *matCellDef="let message" class="text-center">{{ getStatus(message) }}</td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: tableColumns" class="cursor"></tr>
+    <tr mat-row *matRowDef="let row; columns: tableColumns"
+      [ngStyle]="{'font-weight': (getStatus(row) === 'unread' || getStatus(row) === 'none') ? 'bold' : 'normal'}"
+      class="cursor" (click)="messageOnClick(row)">
+    </tr>
   </table>
+
+  <ng-template #messageDialog let-msg>
+    <h1 mat-dialog-title>{{ msg.subject }}</h1>
+    <mat-dialog-content><p>{{ msg.msgText }}</p></mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-raised-button color="primary" (click)="close()">Close</button>
+      <button mat-raised-button color="primary" (click)="deleteMsg(msg)">Delete</button>
+    </mat-dialog-actions>
+  </ng-template>
+
+  <!-- dialog for displaying an invite notification-->
+  <ng-template #inviteDialog let-data>
+    <h3 mat-dialog-title class="text-center">Golfing Invitation</h3>
+    <mat-dialog-content>
+      <p>{{ data.invitedByName + ' has invited you to play golf.' }}</p>
+      <h5><span class="blueText">Course:</span> {{ data.courseName }}</h5>
+      <h5><span class="blueText">Date:</span> {{ getDisplayDate(data.date) }}</h5>
+      <h5 *ngIf="data.status === 'none'" class="blueText text-center mt-3">Tee Times Available</h5>
+      <div *ngIf="loadingTeeTimes === true">
+        <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
+        <h6 class="mt-2 text-center">Loading...</h6>
+      </div>
+      <div *ngIf="(loadingTeeTimes === false && (data.status === 'none' || data.status === 'maybe'))">
+        <div class="row" *ngFor="let booking of inviteBookings">
+          <div *ngIf="booking.teeTime" class="col-6 text-center">{{ booking.teeTime }}</div>
+          <div *ngIf="booking.teeTime" class="col-6 text-center pt-1">
+            <mat-checkbox (change)="changeBooking(booking.id, $event)" [checked]="acceptedBookingId === booking.id"></mat-checkbox>
+          </div>
+          <div *ngIf="!booking.teeTime">
+            <p>Tee times will be determined later.</p>
+          </div>
+        </div>
+        <div *ngIf="!inviteBookings || inviteBookings.length < 1">
+          <p>Sorry there are not more spots avialable</p>
+        </div>
+      </div>
+      <p *ngIf="data.status !== 'none'">You have {{ data.status === 'maybe' ? 'replied maybe to' : data.status }} this invitation.</p>
+      <hr>
+    </mat-dialog-content>
+    <mat-dialog-actions *ngIf="(data.status === 'none' || data.status === 'maybe') && (inviteBookings && inviteBookings.length > 0)">
+      <button class="mx-auto d-block" mat-raised-button color="primary" matTooltip="The spot will be reserved in your name and account" (click)="acceptInvite()">Accept</button>
+      <button class="mx-auto d-block" mat-raised-button color="primary" matTooltip="Sender will be notified you can't make it" (click)="declineInvite()">Decline</button>
+      <button class="mx-auto d-block" mat-raised-button color="primary" matTooltip="You will be able to accept/decline at a later point if still available" (click)="onClickMaybe()">Maybe</button>
+    </mat-dialog-actions>
+    <mat-dialog-actions *ngIf="(data.status !== 'none' && data.status !== 'maybe') || (!inviteBookings || inviteBookings.length < 1)">
+      <button class="mx-auto d-block" mat-raised-button color="primary" (click)="close()">Close</button>
+      <button class="mx-auto d-block" mat-raised-button color="primary" (click)="deleteInvite(data)">Delete</button>
+    </mat-dialog-actions>
+
+  </ng-template>
 
 </div>

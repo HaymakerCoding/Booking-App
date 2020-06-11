@@ -19,6 +19,8 @@
       <button mat-raised-button color="primary" [disabled]="!form.valid" name='btnSubmit' id='btnSubmit'>Login</button>
     </div>
 
+    <button (click)="openForgotPassword(forgotDialog)" class="mx-auto d-block" type="button" mat-button>Forgot Password</button>
+
     <div *ngIf="loading === true">
       <mat-spinner class="mx-auto d-block mt-2"></mat-spinner>
       <h6 class="mt-2 text-center">Loading...</h6>
@@ -26,5 +28,20 @@
     <h4 name="errors" class="text-center" style="color:red;" id="loginErrors"></h4>
 
   </form>
+
+  <ng-template #forgotDialog>
+    <h2 mat-dialog-title>Password Reset</h2>
+    <mat-dialog-content>
+      <p>Sorry to hear you forgot your password. Enter your email below and we will send a password reset link to you.</p>
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput type="email" #emailInput [formControl]="resetEmail">
+      </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-raised-button [disabled]="resetEmail.invalid" (click)="resetPassword(emailInput.value)" color="primary">Submit</button>
+      <button mat-raised-button (click)="close()" color="primary">Close</button>
+    </mat-dialog-actions>
+  </ng-template>
 
 </div>

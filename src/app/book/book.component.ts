@@ -25,6 +25,7 @@ import { TeeTime } from '../models/TeeTime';
 import { ChronoGolfService } from '../services/chronoGolf.service';
 import { MemberSearchComponent } from '../member-search/member-search.component';
 import { BuddyService } from '../services/buddy.service';
+import { BuddyList } from '../models/BuddyList';
 
 @Component({
   selector: 'app-book',
@@ -73,7 +74,7 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
   dataSource; // data source for final table, value assigned at end of step 3
 
   buddyLists: BuddyNode[] = [];
-  buddyListNames: string[] = [];
+  lists: BuddyList[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -136,7 +137,7 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loggedUser = response.payload[0];
         this.getMemberList();
       } else {
-        console.log('Sorry there was an error fetching user data from the database.');
+        alert('Sorry there was an error fetching user data from the database.');
         console.error(response.status);
       }
     }));
@@ -151,7 +152,7 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
         this.allMembers = response.payload;
         this.getAnnouncement();
       } else {
-        console.log('Sorry there was an error fetching user data from the database.');
+        alert('Sorry there was an error fetching user data from the database.');
         console.error(response.status);
       }
     }));
@@ -310,9 +311,9 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
       // course and spots selected so initialize the memberSelected array which will be populated in next step
       this.membersSelected = [];
       this.membersSelected.push(new MemberSelected(this.loggedUser.id, this.loggedUser.firstName + ' ' +
-          this.loggedUser.lastName, this.loggedUser.memberNumber, null, null));
+          this.loggedUser.lastName, this.loggedUser.memberNumber, null, null, false));
       for (let x = 0 ; x < this.spotsSelected - 1; x++) {
-        this.membersSelected.push(new MemberSelected(null, null, null, null, null));
+        this.membersSelected.push(new MemberSelected(null, null, null, null, null, false));
       }
     }
   }
@@ -363,7 +364,7 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
       let member: BasicMember;
       member = this.allMembers.find(x => x.memberNumber.toString() === input.value);
       if (member) {
-        this.membersSelected[index] = new MemberSelected(member.memberId, member.fullName, member.memberNumber, null, null);
+        this.membersSelected[index] = new MemberSelected(member.memberId, member.fullName, member.memberNumber, null, null, false);
       }
     }
   }
@@ -408,7 +409,7 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   showMemberSearch(numInput: HTMLInputElement, index) {
     const modalRef = this.matDialogService.open(MemberSearchComponent, {
-      data: {members: this.allMembers, buddyLists: this.buddyLists, buddyListNames: this.buddyListNames }
+      data: { members: this.allMembers, buddyLists: this.buddyLists }
     });
 
     modalRef.afterClosed().subscribe(response => {
@@ -469,14 +470,14 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param event Drop Event
    * @param memberId ID of member this tee time is being assigned to
    */
-  drop(event, memberId) {
-    const member = this.membersSelected.find(x => x.memberId === memberId);
+  drop(event, memberObj) {
+    const member = this.membersSelected.find(x => x === memberObj);
     if (!member.teeTime) {
       if (event.previousContainer === event.container) {
         alert('here');
       } else {
         // assign member to this tee time
-        this.allTeeTimes[event.previousIndex].memberId = memberId;
+        this.allTeeTimes[event.previousIndex].memberId = member.memberId;
         // assign tee time to member
         member.teeTime = this.allTeeTimes[event.previousIndex];
         // remove tee time from available
@@ -504,7 +505,7 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
       if (x.teeTime !== null) {
         this.subscriptions.push(this.chronoGolfService.addReservation(x.teeTime.teeTimeId, 18, this.courseSelected.courseId)
           .subscribe(response => {
-            if (response.status === '201') {
+            if (response.status === 201) {
               x.teeTimeReservationId = response.payload;
             } else {
               console.error(response);
@@ -552,10 +553,6 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
    * tee time reservation
    */
   completeBooking() {
-    const members = [];
-    this.membersSelected.forEach(x => {
-      members.push(x.memberId);
-    });
     this.preBooking = new PreBooking(this.dateSelected[0], this.courseSelected.courseId, this.membersSelected, this.loggedUser.id, null);
     this.subscriptions.push(this.bookingService.add(this.preBooking, this.dateSelected[1], this.courseSelected.courseName)
       .subscribe(response => {
@@ -585,10 +582,10 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.push(this.bookingService.getAnnouncement().subscribe(response => {
       if (response.status === '200') {
         this.announcementHTML  = response.payload[0];
-        this.checkLMC();
       } else {
         console.error(response.status);
       }
+      this.getBuddyLists();
     }));
   }
 
@@ -601,7 +598,7 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
       this.lmc = true;
       this.selectDate(this.dates[0]);
     }
-    this.getBuddyLists();
+    this.loading = false;
   }
 
   /**
@@ -610,8 +607,8 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
   getBuddyLists() {
     this.subscriptions.push(this.buddyService.getAllLists().subscribe(response => {
       if (response.status === 200) {
-        this.buddyListNames = response.payload;
-        if (this.buddyListNames.length > 0) {
+        this.lists = response.payload;
+        if (this.lists.length > 0) {
           this.getBuddies();
         } else {
           this.loading = false;
@@ -628,19 +625,19 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   getBuddies() {
     let num = 0;
-    this.buddyListNames.forEach(name => {
-      this.subscriptions.push(this.buddyService.getAll(name).subscribe(response => {
+    this.lists.forEach(list => {
+      this.subscriptions.push(this.buddyService.getAll(list.id).subscribe(response => {
         if (response.status === 200) {
           num++;
           const buddies = [];
           response.payload.forEach(x => {
             // this.allBuddies.push(x);
-            const buddy = new Buddy(x.id, x.fullName, null, x.memberId, x.listName);
+            const buddy = new Buddy(x.id, x.fullName, null, x.memberId, list.id);
             buddies.push(buddy);
           });
-          const node: BuddyNode = {name, children: buddies};
+          const node: BuddyNode = { id: list.id, name: list.name, children: buddies, editMode: false};
           this.buddyLists.push(node);
-          if (num >= this.buddyListNames.length) {
+          if (num >= this.lists.length) {
             // all lists initialized
             this.getImagesForBuddies();
           }
@@ -658,20 +655,24 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
   getImagesForBuddies() {
     const totalNeeded = this.getNumBuddies();
     let totalDone = 0;
-    this.buddyLists.forEach(x => {
-      for (const member of x.children) {
-        this.subscriptions.push(this.memberService.getMemberPic(member.memberId.toString()).subscribe(response => {
-          if (response.status === '200') {
-            member.pic = response.payload[0];
-          }
-          totalDone++;
-          if (totalDone >= totalNeeded) {
-            // all images loaded
-            this.loading = false;
-          }
-        }));
-      }
-    });
+    if (totalNeeded > 0) {
+      this.buddyLists.forEach(x => {
+        for (const member of x.children) {
+          this.subscriptions.push(this.memberService.getMemberPic(member.memberId.toString()).subscribe(response => {
+            if (response.status === '200') {
+              member.pic = response.payload[0];
+            }
+            totalDone++;
+            if (totalDone >= totalNeeded) {
+              // all images loaded
+              this.checkLMC();
+            }
+          }));
+        }
+      });
+    } else {
+      this.checkLMC();
+    }
   }
 
   /**
@@ -683,6 +684,23 @@ export class BookComponent implements OnInit, OnDestroy, AfterViewInit {
     return num;
   }
 
+  /**
+   * Reserve a spot as an 'Invite', it can then be sent to another member to confirm
+   * @param index Index in members selected
+   * @param checkbox Checkbox Element that triggered this event
+   */
+  reserveSpotForAnother(index, checkbox: MatCheckbox) {
+    if (checkbox.checked) {
+      this.membersSelected[index] = new MemberSelected(this.loggedUser.id,
+      this.loggedUser.firstName + this.loggedUser.lastName, this.loggedUser.memberNumber, null, null, true);
+    } else {
+      this.membersSelected[index].memberId = null;
+      this.membersSelected[index].memberNumber = null;
+      this.membersSelected[index].fullName = null;
+      this.membersSelected[index].reserved = false;
+    }
+  }
+
 }
 
 class MemberSelected {
@@ -691,7 +709,8 @@ class MemberSelected {
     public fullName: string | null,
     public memberNumber: number,
     public teeTime: MemberTeeTime,
-    public teeTimeReservationId: any
+    public teeTimeReservationId: any,
+    public reserved: boolean
   ) {}
 }
 
@@ -704,10 +723,10 @@ class MemberTeeTime {
 }
 
 interface BuddyNode {
+  id: number;
   name: string;
   children?: Buddy[] ;
-  pic?: any;
-  editMode?: boolean;
+  editMode: boolean;
 }
 
 class Buddy {
@@ -716,6 +735,6 @@ class Buddy {
     public name: string,
     public pic: any,
     public memberId: number,
-    public listName: string
+    public listId: number
   )  {}
 }

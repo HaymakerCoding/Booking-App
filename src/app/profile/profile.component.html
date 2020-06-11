@@ -1,0 +1,80 @@
+<mat-card>
+  <mat-card-header class="p-3">
+    <img *ngIf="memberData.pic" class="userAvatar" [src]="'data:image/jpeg;base64,' + memberData.pic" mat-card-avatar>
+    <mat-icon *ngIf="!memberData.pic" style="font-size:60px; height:60px; margin-right:15px;"  mat-card-avatar>account_circle</mat-icon>
+    <mat-card-title>{{ memberData?.firstName + " " + memberData?.lastName }}</mat-card-title>
+    <mat-card-subtitle style="color:lightgray;">{{ memberData?.memberNumber }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content class="p-3">
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">First Name</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.firstName }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Last Name</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.lastName }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Gender</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.membersex}}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Birth Year</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.memberbirthdate }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Email</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.email }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Alternate Email</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.altEmail }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Home Phone</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.homePhone }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Cell Phone</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.cellPhone}}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Address</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.address }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">City</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.city }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Provice</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.province }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Postal Code</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.postal }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Rounds Per Year</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.memberRoundsPerYear }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Average Score</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.memberAverageScore }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Competition Preference</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.competitionPref }}</div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-4 col-lg-2 tags">Days Able to Play</div>
+      <div class="col-6 col-md-4 col-lg-3">{{ memberData.daysAbleToPlay }}</div>
+    </div>
+
+  </mat-card-content>
+  <mat-card-actions>
+      <button (click)="goToEdit()" class="ml-4" mat-raised-button color="primary">Edit</button>
+      <button (click)="close()" class="ml-3" mat-raised-button color="primary">Close</button>
+  </mat-card-actions>
+</mat-card>
+

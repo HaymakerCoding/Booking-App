@@ -1,20 +1,110 @@
-<h3 class="text-center mt-3 mb-3">Invite some buddies to play golf</h3>
+<h3 class="text-center mt-3 mb-3">Invite Some Buddies to Play Golf</h3>
 
-<h4>Step 1 - Get Tee Times</h4>
-<mat-form-field>
-  <mat-label>Number of Players</mat-label>
-  <input matInput>
-</mat-form-field>
-<mat-form-field>
-  <input matInput [matDatepicker]="picker" placeholder="Choose a date">
-  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker #picker></mat-datepicker>
-</mat-form-field>
-<mat-form-field>
-  <mat-label>Course</mat-label>
-  <mat-select>
-    <mat-option>Test</mat-option>
-  </mat-select>
-</mat-form-field>
+<p *ngIf="!allInvites || allInvites.length < 1">You don't have any reserved spots. The first step is to book the desired amount of spots, clicking the 'reserve' box next to each on Step 3.
+  Complete the booking, then return here and you will see the spots that you can then send out invites for.</p>
+
+<h5>Reservations</h5>
+
+<table mat-table [dataSource]="dataSource" style="width:100%;">
+  <ng-container matColumnDef="date">
+    <th mat-header-cell *matHeaderCellDef>Date</th>
+    <td mat-cell *matCellDef="let res">{{ res.date | date}}</td>
+  </ng-container>
+  <ng-container matColumnDef="course">
+    <th mat-header-cell *matHeaderCellDef>Course</th>
+    <td mat-cell *matCellDef="let res">{{ res.course }}</td>
+  </ng-container>
+  <ng-container matColumnDef="responses">
+    <th class="text-center" mat-header-cell *matHeaderCellDef>Responses</th>
+    <td class="text-center" mat-cell *matCellDef="let res">
+      <button mat-raised-button color="primary" (click)="viewResponses(resultsDialog, res)">View</button>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="spotsLeft">
+    <th class="text-center" mat-header-cell *matHeaderCellDef>Spots Left</th>
+    <td class="text-center" mat-cell *matCellDef="let res">{{ res.spotsLeft + '/' + res.maxSpots }}</td>
+  </ng-container>
+  <ng-container matColumnDef="invite">
+    <th class="text-center" mat-header-cell *matHeaderCellDef>Invite</th>
+    <td class="text-center" mat-cell *matCellDef="let res">
+      <button [disabled]="res.spotsLeft < 1" mat-raised-button color="primary" (click)="openInviteDialog(inviteDialog, res.date, res.courseId, res.course)">Send Invite(s)</button>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="getColumns()"></tr>
+  <tr mat-row *matRowDef="let row; columns: getColumns()"></tr>
+</table>
+
+<!--dialog for showing results of invites sent out -->
+<ng-template #resultsDialog let-data>
+  <div class="text-center" matDialogTitle>Responses</div>
+  <mat-dialog-content>
+    <div class="row" *ngFor="let response of data">
+      <div class="col-6">
+        {{ response.fullName }}
+      </div>
+      <div class="col-6" [style.color]="getResponseColor(response.status)">
+        {{ response.status === 'none' ? 'No response' : response.status }}
+      </div>
+    </div>
+    <hr>
+    <i># Invites sent: {{ data.length }}</i>
+  </mat-dialog-content>
+  <hr>
+  <mat-dialog-actions>
+    <button class="mx-auto d-block" mat-raised-button color="primary" (click)="closeDialog()">Close</button>
+  </mat-dialog-actions>
+</ng-template>
+
+<!--dialog for choosing and sending invites-->
+<ng-template #inviteDialog>
+  <div matDialogTitle>
+    <h3 class="text-center">Send Invites</h3>
+    <h5 class="text-center blueText">{{ 'For ' + (inviteDate | date) + ' @ ' + inviteCourseName }}</h5>
+    <h6 class="text-center">Buddies Selected: {{ invited.length }}</h6>
+    <mat-divider></mat-divider>
+  </div>
+  <mat-dialog-content>
+    <div *ngIf="buddyLists.length < 1">You seem to have no buddy lists. Build buddy lists first, then you can select them here.</div>
+    <mat-tree [dataSource]="treeDataSource" [treeControl]="treeControl" class="bottom-gray">
+      <mat-tree-node *matTreeNodeDef="let node;" >
+        <!-- use a disabled button to provide padding for tree leaf -->
+        <button mat-icon-button disabled></button>
+        <!--this is the actual member data-->
+        <div class="row selectableMembers" style="width:100%;">
+          <div class="col-9 text-left">
+              {{ node.name }}
+          </div>
+          <div class="col-3 text-left">
+            <mat-checkbox [checked]="isInvited(node.memberId)" (change)="addToInvited(node.memberId, $event)"></mat-checkbox>
+          </div>
+        </div>
+      </mat-tree-node>
+      <!-- This is the tree node template for expandable nodes -->
+      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding class="buddy-list-names">
+        <button mat-icon-button matTreeNodeToggle
+                [attr.aria-label]="'toggle ' + node.name">
+          <mat-icon class="mat-icon-rtl-mirror mb-1">
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
+        <div style="display:flex; width:100%; margin-top:4px;">
+          <div style="font-weight:bold;">
+            {{ node.name }}
+            &nbsp; {{ '(' + node.length + ')' }}
+          </div>
+          <div style="flex: 1"></div>
+          <mat-checkbox class="mr-1 mt-1" matTooltip="select all" (change)="addBuddyListToInvited(node.name, $event)"></mat-checkbox>
+        </div>
+      </mat-tree-node>
+    </mat-tree>
+  </mat-dialog-content>
+  <mat-dialog-actions style="border-top:1px solid lightgray;">
+    <button class="mx-auto d-block" [disabled]="invited.length < 1" mat-raised-button color="primary" (click)="sendInvites()">Send</button>
+    <button class="mx-auto d-block" mat-raised-button color="primary" (click)="closeDialog()">Cancel</button>
+  </mat-dialog-actions>
+
+</ng-template>
+
+
 
 

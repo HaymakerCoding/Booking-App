@@ -1,143 +1,119 @@
-<div class="container content pt-5 pb-5">
+<div class="content p-2 p-md-5">
 
-  <h1 class="text-center">My Profile</h1>
+  <h1 class="text-center">Edit Profile</h1>
   <hr>
+  <div *ngIf="unsavedChanges === true" class="alert alert-info" role="alert">
+    You have unsaved changes. Click save button below to keep changes.
+  </div>
 
   <form *ngIf="form" [formGroup]="form"
   (ngSubmit)="save(form.value)">
-
     <div class="row">
       <div class="col-12 col-md-6">
-        <div class="mb-3" style="background-color:rgba(78, 85, 97, 0.9); padding-top:8px; padding-bottom:4px; border-radius:6px;">
-        <h2 class="text-center" style="color:white!important;">Contact Info</h2>
+        <div class="mb-3" style="background-color:#37474F; padding-top:8px; padding-bottom:4px; border-radius:6px;">
+          <h2 class="text-center" style="color:white!important;">Contact Info</h2>
         </div>
-          <div class="form-group row">
-            <label for="firstNameInput" class="col-sm-4 col-form-label">First Name *:</label>
-            <div class="col-sm-8">
-              <input type="text" class="form-control" maxlength="50" id="firstNameInput" formControlName="firstName">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="lastNameInput">Last Name *:</label>
-            <div class="col-sm-8">
-              <input type="text" class="form-control" maxlength="50" id="lastNameInput" formControlName="lastName">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="genderSelect">Gender:</label>
-            <div class="col-sm-8">
-              <select class="form-control"  id="genderSelect" formControlName="gender">
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="birthInput">Birth Year:</label>
-            <div class="col-sm-8">
-              <input type="text" class="form-control" placeholder="YYYY" maxlength="4" id="birthInput" formControlName="birth">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="emailInput">Email:</label>
-            <div class="col-sm-8">
-              <input type="email" class="form-control" id="emailInput" formControlName="email" readonly>
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="altEmailInput">Alternate Email:</label>
-            <div class="col-sm-8">
-              <input type="email" class="form-control" id="altEmailInput" formControlName="altEmail">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="homePhoneInput">Home Phone:</label>
-            <div class="col-sm-8">
-              <input type="phone" class="form-control" id="homePhoneInput" formControlName="homePhone">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="cellPhoneInput">Cell Phone:</label>
-            <div class="col-sm-8">
-              <input type="phone" class="form-control" id="cellPhoneInput" formControlName="cellPhone">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="addressInput">Address:</label>
-            <div class="col-sm-8">
-              <input type="text" class="form-control" id="addressInput" formControlName="address">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="cityInput">City:</label>
-            <div class="col-sm-8">
-              <input type="text" class="form-control" id="cityInput" formControlName="city">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="provInput">Province:</label>
-            <div class="col-sm-8">
-              <input type="text" class="form-control" id="provInput" formControlName="province">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label class="col-sm-4 col-form-label" for="postalInput">Postal Code:</label>
-            <div class="col-sm-8">
-              <input type="text" class="form-control" id="postalInput" formControlName="postal">
-            </div>
-          </div>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="First Name" readonly required formControlName="firstName">
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="Last Name" readonly required formControlName="lastName">
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Gender</mat-label>
+          <mat-select [value]="form.get('gender').value" formControlName="gender" (change)="toggleUnsaved()" >
+            <mat-option value="M">Male</mat-option>
+            <mat-option value="F">Female</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="Birth Year (YYYY)" [errorStateMatcher]="matcher" formControlName="birth" (input)="toggleUnsaved()">
+          <mat-error *ngIf="form.get('birth').hasError('pattern') || form.get('birth').hasError('maxlength') || form.get('birth').hasError('minlength')">Must be a 4 digit year</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="Email" formControlName="email" required readonly>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="Alternate Email" [errorStateMatcher]="matcher" formControlName="altEmail" (input)="toggleUnsaved()">
+          <mat-error *ngIf="form.get('altEmail').hasError('email')">Not a valid email</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput type="phone" placeholder="Home Phone" [errorStateMatcher]="matcher" formControlName="homePhone" (input)="formatPhone($event.target.value, 'homePhone'); toggleUnsaved()">
+          <mat-error *ngIf="!form.get('homePhone').valid">
+            Enter 10 numbers, no spaces or characters
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput type="phone" placeholder="Cell Phone" [errorStateMatcher]="matcher" formControlName="cellPhone" (input)="formatPhone($event.target.value, 'cellPhone'); toggleUnsaved()">
+          <mat-error *ngIf="!form.get('cellPhone').valid">
+            Enter 10 numbers, no spaces or characters
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="Address" formControlName="address" (input)="toggleUnsaved()">
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="City" formControlName="city" (input)="toggleUnsaved()">
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Province</mat-label>
+          <mat-select [value]="form.get('province').value" formControlName="province" (change)="toggleUnsaved()">
+            <mat-option [value]="prov.code" *ngFor="let prov of provinces">{{ prov.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="Postal Code" [errorStateMatcher]="matcher" formControlName="postal" (input)="toggleUnsaved()">
+          <mat-error *ngIf="!form.get('postal').valid">Enter 6 characters no spaces</mat-error>
+        </mat-form-field>
 
       </div>
 
       <div class="col-12 col-md-6">
-          <div class="mb-3" style="background-color:rgba(78, 85, 97, 0.9); padding-top:8px; padding-bottom:4px; border-radius:6px;">
+        <div class="mb-3" style="background-color:#37474F; padding-top:8px; padding-bottom:4px; border-radius:6px;">
           <h2 class="text-center" style="color:white!important;">Preferences</h2>
-          </div>
-          <div class="form-group row">
-              <label class="col-sm-4 col-form-label" for="roundInput">Rounds Per Year:</label>
-              <div class="col-sm-8">
-                <input type="number" class="form-control" maxlength="5" id="roundInput" formControlName="rounds">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="avgInput" class="col-sm-4 col-form-label">Average Score</label>
-              <div class="col-sm-8">
-                <input type="number" class="form-control" maxlength="5" id="avgInput" formControlName="avgScore">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="competitiveSelect" class="col-sm-12 col-form-label">Competition Preference</label>
-              <div class="col-sm-12">
-                <select class="form-control" id="competitiveSelect" formControlName="competitionPref">
-                  <option>More intense the better</option>
-                  <option>Friendly yet competitive</option>
-                  <option>A small amount</option>
-                  <option>Purely social</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="daysSelect" class="col-sm-12 col-form-label">Days Able to Play</label>
-              <div class="col-sm-12">
-                <select class="form-control" id="daysSelect" formControlName="daysAbleToPlay">
-                  <option>Any day if I am free</option>
-                  <option>Mostly weekends but the odd weekday</option>
-                  <option>Mostly weekdays but the odd weekend</option>
-                  <option>Weekends</option>
-                  <option>Weekdays</option>
-                </select>
-              </div>
-            </div>
-            <div id="photoHolder">
-              <img *ngIf="user.pic" class="mx-auto img-thumbnail d-block userAvatar" [src]="'data:image/jpeg;base64,' + user.pic">
-              <mat-icon style="transform:scale(3); height:40px;" class="mx-auto d-block mt-5" *ngIf="!user.pic">account_circle</mat-icon>
-              <button mat-raised-button type="button" class="mt-1" (click)="showImgUpload()" color="primary">
-                {{ !user.pic ? 'Upload Picture' : 'Change Picture' }}
-              </button>
-              <br>
-              * Note: you may need to refresh your browser to see new avatar image in top nav.
-            </div>
         </div>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="Rounds Per Year" [errorStateMatcher]="matcher" formControlName="rounds" (input)="toggleUnsaved()">
+          <mat-error *ngIf="form.get('rounds').hasError('maxlength')">Max 4 digits</mat-error>
+          <mat-error *ngIf="form.get('rounds').hasError('pattern')">Must be a number</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <input matInput placeholder="Average Score" [errorStateMatcher]="matcher" formControlName="avgScore" (input)="toggleUnsaved()">
+          <mat-error *ngIf="form.get('avgScore').hasError('maxlength')">Max 3 digits</mat-error>
+          <mat-error *ngIf="form.get('avgScore').hasError('pattern')">Must be a number</mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Competition Preference</mat-label>
+          <mat-select formControlName="competitionPref" [value]="form.get('competitionPref').value" (change)="toggleUnsaved()">
+            <mat-option value="More intense the better">More intense the better</mat-option>
+            <mat-option value="Friendly yet competitive">Friendly yet competitive</mat-option>
+            <mat-option value="A small amount">A small amount</mat-option>
+            <mat-option value="Purely social">Purely social</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Days Able to Play</mat-label>
+          <mat-select formControlName="daysAbleToPlay" [value]="form.get('daysAbleToPlay').value" (change)="toggleUnsaved()">
+            <mat-option value="Any day if I am free">Any day if I am free</mat-option>
+            <mat-option value="Mostly weekends but the odd weekday">Mostly weekends but the odd weekday</mat-option>
+            <mat-option value="Mostly weekdays but the odd weekend">Mostly weekdays but the odd weekend</mat-option>
+            <mat-option value="Weekends">Weekends</mat-option>
+            <mat-option value="Weekdays">Weekdays</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div id="photoHolder">
+          <img *ngIf="user.pic" class="mx-auto img-thumbnail d-block userAvatar" [src]="'data:image/jpeg;base64,' + user.pic">
+          <mat-icon style="transform:scale(3); height:40px;" class="mx-auto d-block mt-5" *ngIf="!user.pic">account_circle</mat-icon>
+          <button mat-raised-button type="button" class="mt-1" (click)="showImgUpload()" color="primary">
+            {{ !user.pic ? 'Upload Picture' : 'Change Picture' }}
+          </button>
+          <br>
+          * Note: you may need to refresh your browser to see new avatar image in top nav.
+        </div>
+
+      </div>
+
     </div>
 
     <hr>

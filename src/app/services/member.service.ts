@@ -23,7 +23,7 @@ export class MemberService {
     getAllMembers() {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', 'Bearer ' + token);
-      return this.http.get<CustomResponse>(`https://clubeg.golf/common/api_REST/v1/admin/member/get_all_members.php`, {headers})
+      return this.http.get<CustomResponse>(`https://clubeg.golf/common/api_REST/v1/booking/user/get-all-members/index.php`, {headers})
       .pipe(map(response => {
         return response;
       }));
