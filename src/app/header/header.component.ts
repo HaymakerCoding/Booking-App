@@ -25,7 +25,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
 
-  @ViewChild('sessionModal', { static: false }) private sessionModal;
+  @ViewChild('sessionModal') private sessionModal;
 
   subscriptions: Subscription[] = [];
 

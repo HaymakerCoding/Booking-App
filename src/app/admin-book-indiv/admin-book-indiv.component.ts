@@ -33,9 +33,9 @@ import { Subscription } from 'rxjs';
 })
 export class AdminBookIndivComponent implements OnInit, OnDestroy {
 
-  @ViewChild('teeTimeModal', {static: false}) private teeTimeModal: NgbModal;
+  @ViewChild('teeTimeModal') private teeTimeModal: NgbModal;
   private teeModalRef: NgbModalRef;
-  @ViewChild('memberModal', { static: false}) private memberModal: NgbModal;
+  @ViewChild('memberModal') private memberModal: NgbModal;
   private memberModalRef: NgbModalRef;
 
   form: FormGroup;

@@ -18,7 +18,7 @@ export class ImageCropperComponent implements OnInit, OnDestroy, AfterViewInit, 
   loading: boolean;
   subscriptions: Subscription[] = [];
 
-  @ViewChild('image', { static: false }) public imageElement: ElementRef;
+  @ViewChild('image') public imageElement: ElementRef;
   imageSource: string | ArrayBuffer;
   fileToUpload: any;
 

@@ -33,8 +33,8 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
   availableBookings: Booking[];
 
-  @ViewChild('inviteDialog', { static: false }) inviteDialog;
-  @ViewChild('messageDialog', { static: false }) messageDialog;
+  @ViewChild('inviteDialog') inviteDialog;
+  @ViewChild('messageDialog') messageDialog;
 
   loadingTeeTimes: boolean;
 
